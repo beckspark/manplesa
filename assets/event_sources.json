@@ -12,7 +12,8 @@
                 {"name": "palestine", "fullName": "🇵🇸 Palestine", "defaultValue": "true"},
                 {"name": "socialism", "fullName": "🚩 Socialism", "defaultValue": "true"},
                 {"name": "ecology", "fullName": "🌿 Ecology", "defaultValue": "true"},
-                {"name": "organizing", "fullName": "🤝 Organizing", "defaultValue": "true"}
+                {"name": "organizing", "fullName": "🤝 Organizing", "defaultValue": "true"},
+                {"name": "outreach", "fullName": "Outreach", "defaultValue": "true"}
             ],
             [
                 {"name": "activities", "fullName": "Activities", "defaultValue": "true"},
@@ -37,6 +38,7 @@
                 {"name": "interests", "fullName": "Interest & Hobbies", "defaultValue": "true"},
                 {"name": "diy", "fullName": "🔧 DIY", "defaultValue": "true"},
                 {"name": "books", "fullName": "📚 Books", "defaultValue": "true"},
+                {"name": "book_club", "fullName": "📚 Book Club", "defaultValue": "true"},
                 {"name": "food", "fullName": "🍲 Food", "defaultValue": "true"},
                 {"name": "art", "fullName": "🎨 Art", "defaultValue": "true"},
                 {"name": "discussion", "fullName": "🗨️ Yapping & Talking", "defaultValue": "true"},
@@ -54,12 +56,16 @@
                 {"name": "unknownType", "fullName": "🤷 idk", "defaultValue": "true"}
             ]
         ],
-        "eventApiToGrab": [
+        "_eventApiToGrab": [
             "/api/events/googleCalendar",
             "/api/events/squarespace",
             "/api/events/elfsight",
             "/api/events/libcal"
-          ]
+          ],
+        "eventApiToGrab": [
+            "/api/events/libnet",
+            "/api/events/helpfulvillage"
+        ]
     },
     "googleCalendar": [
         {
@@ -536,95 +542,63 @@
             ]
         }
     ],
-    "libcal": [
+    "libnet": [
         {
-            "name": "Richmond Public Libraries",
-            "url": "https://rvalibrary.libcal.com/process_search.php?site_id=12885&perpage=100&audience=4466",
-            "prefixTitle": ":rvalibrary: ",
+            "name": "Mt Pleasant DC Public Library",
+            "url": "https://dclibrary.libnet.info/eeventcaldata",
+            "prefixTitle": ":mtp library: ",
             "suffixTitle": "",
             "filters": [
-                ["invisible", "Board Meeting", "title"],
-                ["invisible", "STAFF PLANNING", "title"],
-                ["invisible", "Small Business Legal Workshop", "title"],
-                ["invisible", "Office Hours", "title"],
-                ["invisible", "Family Law", "title"],
-                ["invisible", "Senior", "title"],
-                ["invisible", "CANCELLED", "title"],
-                ["invisible", "legal resources", "title"],
-                ["invisible", "Blood Pressure", "title"],
-                ["invisible", "Memory Lab", "title"],
-                ["invisible", "Computer Basics", "title"],
-                ["invisible", "Tech Tuesday", "title"],
-                ["invisible", "Extended Hours", "title"],
-                ["invisible", "Richmond Community Sing", "title"],
-                ["invisible", "Civic Association Meeting", "title"],
-                ["invisible", "Information Session", "title"],
-                ["invisible", "Board of Trustee Meeting", "title"],
-                ["invisible", "Affordable Housing Workshop", "title"],
-                ["invisible", "Virginia Housing", "title"],
-                ["invisible", "Internet", "title"],
-                ["invisible", "USDOJ", "title"],
-                ["invisible", "eviction", "title"],
+                ["books", "book_club", "eventTag"],
+                ["outreach", "outreach", "eventTag"],
+                ["art", "arts_&_crafts", "eventTag"],
+                ["diy", "makers_&_diy_program", "eventTag"],
+                ["music", "musical_performance", "eventTag"],
                 ["exercise", "fitness", "title"],
-                ["invisible", "tech talk", "title"],
-                ["invisible", "canceled", "title"],
-                ["invisible", "G.E.D", "title"],
                 [["community","movies"], "Movie", "title"],
                 ["diy", "yarn", "title"],
                 [["community","books"], "page turners", "title"],
-                ["invisible", "public law", "description"],
-                ["invisible", "Estate", "title"],
                 [["community","books"], "book club", ["title","description"]],
-                ["invisible", "english language acquisition", "title"],
                 ["movies", "air conditioned cinema", "title"],
-                ["invisible", "help1rva", "title"],
-                ["invisible", "101", "title"],
                 ["games", "board game", "title"],
                 ["games", "boardgame", "title"],
                 ["invisible", "suicide", "title"],
                 ["diy", "crafters", "title"],
-                ["invisible", "financial", "title"],
                 ["organizing", "organizing 101", "description"],
                 ["organizing", "ACLU", ["description","title"]],
                 ["diy", "printing", ["description","title"]],
                 ["books", "author talk", ["description","title"]],
                 ["books", "book banter", ["description","title"]],
-                ["invisible", "help desk", ["description","title"]],
-                ["invisible", "law", "title"],
                 [["market", "food"], "shalom farm", "title"],
                 [["diy"], "special collections", ["description","title"]],
                 [["diy"], "sewing", ["description","title"]],
                 [["movies"], "films", ["title"]],
                 [["diy"], "sashiko", ["description","title"]],
                 [["diy"], "visible mending", ["description","title"]],
-                [["invisible"], "category: law", ["description","title"]],
                 [["diy"], "arpillera", ["description","title"]],
                 [["music"], "category: performances", ["description","title"]],
                 [["music"], "e-resource", ["description","title"]],
                 [["diy"], "crafting hour", ["description","title"]],
                 [["books"], "category: book discussion", ["description","title"]],
-                [["invisible"], "medicare", ["title"]],
-                [["invisible"], "genealogy", ["title"]],
-                [["invisible"], "childcare provider workshop", ["title"]],
-                [["invisible"], "adult english class", ["title"]],
-                [["invisible"], "family flicks!", ["title"]],
-                [["invisible"], "financieros", ["title"]],
-                [["invisible"], "voter registration", ["title"]],
                 [["diy"], "craft", ["title"]],
                 [["diy"], "canva", ["title"]],
                 [["diy"], "diy", ["title"]],
                 ["nonprofit", "community"]
             ],
             "calendarToLocation": [
-                ["Main","Main Library - Richmond Public Library"],
-                ["Belmont","Belmont Branch - Richmond Public Library"],
-                ["Broad Rock","Broad Rock Branch - Richmond Public Library"],
-                ["East End","East End Branch - Richmond Public Library"],
-                ["Ginter Park","Ginter Park Branch - Richmond Public Library"],
-                ["Hull Street","Hull Street Branch - Richmond Public Library"],
-                ["North Avenue","North Avenue Branch - Richmond Public Library"],
-                ["West End","West End Branch - Richmond Public Library"],
-                ["Westover Hills","Westover Hills Branch - Richmond Public Library"]
+                ["Mt Pleasant","Mt Pleasant Branch - DC Public Library"]
+            ]
+        }
+    ],
+    "helpfulvillage": [
+        {
+            "name": "Mt Pleasant Village",
+            "url": "https://mountpleasant.helpfulvillage.com/events.json?=&start=2025-04-27&end=2025-06-08&_=",
+            "urlOrgId": 1746354451382,
+            "prefixTitle": ":mtp village: ",
+            "suffixTitle": " ",
+            "filters": [
+                [["nonprofit", "outreach"], " ", ["title", "description"]]
             ]
         }
     ]

@@ -417,7 +417,7 @@ const transformEventSourcesResponse = (eventSources: Ref<Record<string, any>>) =
           <td class="blurb-image"> <div v-html="svgGrave"></div> </td>
           <td>
             <div class="blurb-text">
-              A communal board for DIY events all around RVA; queer, radical, and STINKY!!!
+              A communal board for events around La Manplesa
             </div>
             <div class="blurb-sub">
               Stop scrolling insta to find the move!<br>
@@ -427,18 +427,10 @@ const transformEventSourcesResponse = (eventSources: Ref<Record<string, any>>) =
         </tr>
       </tbody>
     </table>
-    <div style="text-align: center;" v-if="beforeMOTDDate">
-      <div class="motd">
-        🇵🇸 This Saturday ShutItDown4Palestine is hosting a national day of action to say
-        NO VOTES FOR GENOCIDE. Want to join in RVA? Check out the upcoming rally 
-        <a style="color: var(--text-white);" href="https://www.instagram.com/pslvirginia/p/DBobeMEuC8D/">here!</a> 🇵🇸 
-        <br > 🗓️ Nov 2 | 🕑 2pm | 📍 Monroe Park
-      </div>
-    </div>
     <FullCalendar ref="calendarRef" :options='calendarOptions' />
     <div style="display: flex; align-items: center; flex-direction: row;">
       <div class="desc" style="padding-bottom: 0;">
-        <p>rva.rip was built with the personal hope that no person in richmond should be without community. The site will
+        <p>manplesa was built with the communal hope that no person in mt pleasant should be without community. The site will
           always be free, without frills, and remain a public utility. The events here are drawn from various 
           <a href="https://github.com/natviii/rva.rip/blob/main/assets/event_sources.json">organizer listings</a> that
           contributors (thank you!) have provided. Building community is the focus of this project. If you'd like to become
@@ -455,7 +447,7 @@ const transformEventSourcesResponse = (eventSources: Ref<Record<string, any>>) =
             <li>Don't wanna go outside? Play <a href="https://play.half.earth//">half earth socialism</a>!!!</li>
             <li>Wanna find more groups? Check out our <a href="/list">list of organizations and groups</a> in RVA</li>
           </ul></p>
-        <p>Not in Richmond??? Check out our sibling sites <a href="https://anarchism.nyc/">anarchism.nyc</a>, 
+        <p>Not in Mt. Pleasant or DC??? Check out some of the sites we drew this website source code from--<<a href="https://rva.rip/">rva.rip</a>, a href="https://anarchism.nyc/">anarchism.nyc</a>, 
         <a href="https://bay.lgbt/">bay.lgbt</a>, and <a href="https://anarchism.boston/">anarchism.boston</a>.
         This site wouldn't exist without them, and we're all run by trans folks.</p>
         <p>Want your event listed here? Start making a <a href="/contributing">public google calendar</a> for your events. 

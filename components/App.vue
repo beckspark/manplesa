@@ -447,9 +447,9 @@ const transformEventSourcesResponse = (eventSources: Ref<Record<string, any>>) =
             <li>Don't wanna go outside? Play <a href="https://play.half.earth//">half earth socialism</a>!!!</li>
             <li>Wanna find more groups? Check out our <a href="/list">list of organizations and groups</a> in RVA</li>
           </ul></p>
-        <p>Not in Mt. Pleasant or DC??? Check out some of the sites we drew this website source code from--<<a href="https://rva.rip/">rva.rip</a>, a href="https://anarchism.nyc/">anarchism.nyc</a>, 
+        <p>Not in Mt. Pleasant or DC??? Check out some of the sites we drew this website source code from-- <a href="https://rva.rip/">rva.rip</a>, <a href="https://anarchism.nyc/">anarchism.nyc</a>, 
         <a href="https://bay.lgbt/">bay.lgbt</a>, and <a href="https://anarchism.boston/">anarchism.boston</a>.
-        This site wouldn't exist without them, and we're all run by trans folks.</p>
+        This site wouldn't exist without them, and they're all run by trans folks.</p>
         <p>Want your event listed here? Start making a <a href="/contributing">public google calendar</a> for your events. 
           Once published, request inclusion of your event feed by sending your Google Calendar ID via a 
           <a href="https://github.com/natviii/rva.rip/issues">new GitHub issue</a> or by emailing me at host@rva.rip! 

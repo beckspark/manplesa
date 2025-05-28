@@ -417,7 +417,7 @@ const transformEventSourcesResponse = (eventSources: Ref<Record<string, any>>) =
           <td class="blurb-image"> <div v-html="svgGrave"></div> </td>
           <td>
             <div class="blurb-text">
-              A communal board for events around La Manplesa
+              A communal board for events around Mt Pleasant, DC!
             </div>
             <div class="blurb-sub">
               Stop scrolling insta to find the move!<br>
@@ -430,7 +430,7 @@ const transformEventSourcesResponse = (eventSources: Ref<Record<string, any>>) =
     <FullCalendar ref="calendarRef" :options='calendarOptions' />
     <div style="display: flex; align-items: center; flex-direction: row;">
       <div class="desc" style="padding-bottom: 0;">
-        <p>manplesa was built with the communal hope that no person in mt pleasant should be without community. The site will
+        <p>mtpcc was built with the communal hope that no person in Mt Pleasant should be without community. The site will
           always be free, without frills, and remain a public utility. The events here are drawn from various 
           <a href="https://github.com/natviii/rva.rip/blob/main/assets/event_sources.json">organizer listings</a> that
           contributors (thank you!) have provided. Building community is the focus of this project. If you'd like to become

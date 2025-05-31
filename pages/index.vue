@@ -1,12 +1,12 @@
 <script setup lang="ts">
 
 useHead({
-  title: 'rva.rip',
+  title: 'mtp.cc',
   meta: [
     { name: 'viewport', content: 'width=device-width, initial-scale=1' },
     {
       hid: 'description',
-      name: 'rva.rip',
+      name: 'mtp.cc',
       content: '',
     },
   ],

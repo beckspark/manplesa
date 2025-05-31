@@ -208,7 +208,7 @@
     "helpfulvillage": [
         {
             "name": "Mt Pleasant Village",
-            "url": "https://mountpleasant.helpfulvillage.com/events.json?=&start=2025-04-27&end=2025-06-08&_=",
+            "url": "https://mountpleasant.helpfulvillage.com/events.json",
             "urlOrgId": 1746354451382,
             "prefixTitle": ":mtp village: ",
             "suffixTitle": " ",

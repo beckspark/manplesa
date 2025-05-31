@@ -429,13 +429,13 @@ const transformEventSourcesResponse = (eventSources: Ref<Record<string, any>>) =
     <FullCalendar ref="calendarRef" :options='calendarOptions' />
     <div style="display: flex; align-items: center; flex-direction: row;">
       <div class="desc" style="padding-bottom: 0;">
-        <p>mtpcc was built with the communal hope that no person in Mt Pleasant should be without community. The site will
+        <p>The Mount Pleasant Community Calendar was built with the communal hope that no person in Mt Pleasant should be without community. The site will
           always be free, without frills, and remain a public utility. The events here are drawn from various 
-          <a href="https://github.com/natviii/rva.rip/blob/main/assets/event_sources.json">organizer listings</a> that
+          <a href="https://github.com/beckspark/manplesa/blob/main/assets/event_sources.json">organizer listings</a> that
           contributors (thank you!) have provided. Building community is the focus of this project. If you'd like to become
           a contributor of events, check out our contributing guide <a href="/contributing">here</a>! The events presented here are in a
           constant state of community-based vetting; don't hesitate to provide feedback! For suggestions and questions
-          email <a href="mailto:host@rva.rip">host@rva.rip</a> &lt;3</p>
+          email <a href="mailto:mtpleasantcommunitycalendar@gmail.com">mtpleasantcommunitycalendar@gmail.com</a> &lt;3</p>
         <p>Before making plans, consider checking with venue staff or event organizers directly. This site is not
           affiliated with any events listed.</p>
         <p>Still can't figure out what to do? 
@@ -451,7 +451,7 @@ const transformEventSourcesResponse = (eventSources: Ref<Record<string, any>>) =
         This site wouldn't exist without them, and they're all run by trans folks.</p>
         <p>Want your event listed here? Start making a <a href="/contributing">public google calendar</a> for your events. 
           Once published, request inclusion of your event feed by sending your Google Calendar ID via a 
-          <a href="https://github.com/natviii/rva.rip/issues">new GitHub issue</a> or by emailing me at host@rva.rip! 
+          <a href="https://github.com/beckspark/manplesa/issues">new GitHub issue</a> or by emailing us at mountpleasantcommunitycalendar@gmail.com! 
           You may also provide feedback, fixes, or improvements through either means</p>
       </div>
     </div>

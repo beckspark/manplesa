@@ -13,7 +13,8 @@
                 {"name": "socialism", "fullName": "🚩 Socialism", "defaultValue": "true"},
                 {"name": "ecology", "fullName": "🌿 Ecology", "defaultValue": "true"},
                 {"name": "organizing", "fullName": "🤝 Organizing", "defaultValue": "true"},
-                {"name": "outreach", "fullName": "Outreach", "defaultValue": "true"}
+                {"name": "outreach", "fullName": "Outreach", "defaultValue": "true"},
+                {"name": "family", "fullName": "👪 Family", "defaultValue": "true"}
             ],
             [
                 {"name": "activities", "fullName": "Activities", "defaultValue": "true"},
@@ -59,14 +60,14 @@
         "_eventApiToGrab": [
             "/api/events/googleCalendar",
             "/api/events/squarespace",
-            "/api/events/elfsight",
-            "/api/events/libcal"
+            "/api/events/libnet",
+            "/api/events/helpfulvillage"
           ],
         "eventApiToGrab": [
-            "/api/events/libnet",
-            "/api/events/helpfulvillage",
             "/api/events/googleCalendar",
-            "/api/events/squarespace"
+            "/api/events/squarespace",
+            "/api/events/libnet",
+            "/api/events/helpfulvillage"
         ]
     },
     "googleCalendar": [
@@ -87,7 +88,7 @@
             "prefixTitle": ":anc1d: ",
             "suffixTitle": ":anc1d:",
             "filters": [
-                [["community"], "Community Meeting", ["title", "description"]]
+                [["community"], "Meeting", ["title", "description"]]
             ]
         }
     ],
@@ -164,11 +165,12 @@
             "prefixTitle": ":mtp library: ",
             "suffixTitle": "",
             "filters": [
-                ["books", "book_club", "eventTag"],
-                ["outreach", "outreach", "eventTag"],
-                ["art", "arts_&_crafts", "eventTag"],
-                ["diy", "makers_&_diy_program", "eventTag"],
-                ["music", "musical_performance", "eventTag"],
+                [["community", "family"], "family_program", "eventTag"],
+                [["community", "books"], "book_club", "eventTag"],
+                [["community", "outreach"], "outreach", "eventTag"],
+                [["community", "art"], "arts_&_crafts", "eventTag"],
+                [["community", "diy"], "makers_&_diy_program", "eventTag"],
+                [["community", "music"], "musical_performance", "eventTag"],
                 ["exercise", "fitness", "title"],
                 [["community","movies"], "Movie", "title"],
                 ["diy", "yarn", "title"],
@@ -177,7 +179,6 @@
                 ["movies", "air conditioned cinema", "title"],
                 ["games", "board game", "title"],
                 ["games", "boardgame", "title"],
-                ["invisible", "suicide", "title"],
                 ["diy", "crafters", "title"],
                 ["organizing", "organizing 101", "description"],
                 ["organizing", "ACLU", ["description","title"]],
@@ -197,8 +198,7 @@
                 [["books"], "category: book discussion", ["description","title"]],
                 [["diy"], "craft", ["title"]],
                 [["diy"], "canva", ["title"]],
-                [["diy"], "diy", ["title"]],
-                [["idk"], " ", ["description", "title"]]
+                [["diy"], "diy", ["title"]]
             ],
             "calendarToLocation": [
                 ["Mt Pleasant","Mt Pleasant Branch - DC Public Library"]

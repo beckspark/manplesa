@@ -79,8 +79,8 @@
         {
             "name": "ANC1D",
             "url": "https://anc1d.org/meetingcalendar?format=json",
-            "prefixTitle": ":anc1d: ",
-            "suffixTitle": ":anc1d:",
+            "prefixTitle": "🏛️ ",
+            "suffixTitle": " :anc1d:",
             "filters": [
                 [["community"], "Meeting", ["title", "description"]]
             ]
@@ -88,8 +88,8 @@
         {
             "name": "FreeDC Project",
             "url": "https://freedcproject.org/event-list?format=json",
-            "prefixTitle": ":freedc: ",
-            "suffixTitle": ":freedc:",
+            "prefixTitle": "🌸📢 ",
+            "suffixTitle": " :freedc:",
             "filters": [
                 [["community", "organizing", "activism"], "Ward 1", ["title", "description"]],
                 [["community", "organizing", "activism"], "(mt|mount|mnt)\\.? pleasant", ["title", "description"]]
@@ -166,8 +166,8 @@
         {
             "name": "Mt Pleasant DC Public Library",
             "url": "https://dclibrary.libnet.info/eeventcaldata",
-            "prefixTitle": ":mtp library: ",
-            "suffixTitle": "",
+            "prefixTitle": "📚 ",
+            "suffixTitle": " :mtp library:",
             "filters": [
                 [["community", "family"], "family_program", "eventTag"],
                 [["community", "books"], "book_club", "eventTag"],
@@ -214,8 +214,8 @@
             "name": "Mt Pleasant Village",
             "url": "https://mountpleasant.helpfulvillage.com/events.json",
             "urlOrgId": 1746354451382,
-            "prefixTitle": ":mtp village: ",
-            "suffixTitle": " ",
+            "prefixTitle": "🏡 ",
+            "suffixTitle": " :mtp village:",
             "filters": [
                 [["nonprofit", "outreach"], " ", ["title", "description"]]
             ]

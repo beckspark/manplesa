@@ -57,12 +57,6 @@
                 {"name": "unknownType", "fullName": "🤷 idk", "defaultValue": "true"}
             ]
         ],
-        "_eventApiToGrab": [
-            "/api/events/googleCalendar",
-            "/api/events/squarespace",
-            "/api/events/libnet",
-            "/api/events/helpfulvillage"
-          ],
         "eventApiToGrab": [
             "/api/events/googleCalendar",
             "/api/events/squarespace",
@@ -89,6 +83,16 @@
             "suffixTitle": ":anc1d:",
             "filters": [
                 [["community"], "Meeting", ["title", "description"]]
+            ]
+        },
+        {
+            "name": "FreeDC Project",
+            "url": "https://freedcproject.org/event-list?format=json",
+            "prefixTitle": ":freedc: ",
+            "suffixTitle": ":freedc:",
+            "filters": [
+                [["community", "organizing", "activism"], "Ward 1", ["title", "description"]],
+                [["community", "organizing", "activism"], "(mt|mount|mnt)\\.? pleasant", ["title", "description"]]
             ]
         }
     ],

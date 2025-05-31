@@ -65,7 +65,8 @@
         "eventApiToGrab": [
             "/api/events/libnet",
             "/api/events/helpfulvillage",
-            "/api/events/googleCalendar"
+            "/api/events/googleCalendar",
+            "/api/events/squarespace"
         ]
     },
     "googleCalendar": [
@@ -81,13 +82,12 @@
     ],
     "squarespace": [
         {
-            "name": "Richmond Grows Gardens",
-            "url": "https://www.richmondgrowsgardens.org/events?format=json",
-            "prefixTitle": ":RVAGrowsGardens1: ",
-            "suffixTitle": ":RVAGrowsGardens2:",
+            "name": "ANC1D",
+            "url": "https://anc1d.org/meetingcalendar?format=json",
+            "prefixTitle": ":anc1d: ",
+            "suffixTitle": ":anc1d:",
             "filters": [
-                ["community"],
-                ["ecology"]
+                [["community"], "Community Meeting", ["title", "description"]]
             ]
         }
     ],
@@ -198,7 +198,7 @@
                 [["diy"], "craft", ["title"]],
                 [["diy"], "canva", ["title"]],
                 [["diy"], "diy", ["title"]],
-                ["nonprofit", "community"]
+                [["idk"], " ", ["description", "title"]]
             ],
             "calendarToLocation": [
                 ["Mt Pleasant","Mt Pleasant Branch - DC Public Library"]

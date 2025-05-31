@@ -48,39 +48,52 @@ function formatTitleAndDateToID(inputDate: any, title: string) {
 }
 
 async function getHelpfulVillageEventDetails(eventId: number): Promise<{ startDate?: string; endDate?: string; location?: string; description?: string }> {
-	const url = `https://mountpleasant.helpfulvillage.com/events/${eventId}`;
-	const response = await fetch(url);
-	if (!response.ok) return {};
-	const html = await response.text();
-	const dom = new JSDOM(html);
+    const url = `https://mountpleasant.helpfulvillage.com/events/${eventId}`;
+    const response = await fetch(url);
+    if (!response.ok) return {};
+    const html = await response.text();
+    const dom = new JSDOM(html);
 
-	// Get all ld+json scripts
-	const scripts = Array.from(dom.window.document.querySelectorAll('script[type="application/ld+json"]'));
+	// Find members-only events
+    const membersOnlyDiv = Array.from(dom.window.document.querySelectorAll('div')).find(div =>
+        div.textContent?.toLowerCase().includes('members only')
+    );
+    if (membersOnlyDiv) {
+        return {
+            startDate: '',
+            endDate: '',
+            location: '',
+            description: 'membersOnly'
+        };
+    }
 
-	// Look for the one wrapped in CDATA
-	const cdataScript = scripts.find(script => script.textContent?.includes('//<![CDATA['));
-	if (!cdataScript?.textContent) return {};
+    // Get all ld+json scripts
+    const scripts = Array.from(dom.window.document.querySelectorAll('script[type="application/ld+json"]'));
 
-	// Clean the CDATA wrapping
-	const jsonText = cdataScript.textContent
-		.replace('//<![CDATA[', '')
-		.replace('//]]>', '')
-		.trim();
+    // Look for the one wrapped in CDATA
+    const cdataScript = scripts.find(script => script.textContent?.includes('//<![CDATA['));
+    if (!cdataScript?.textContent) return {};
 
-	let data;
-	try {
-		data = JSON.parse(jsonText);
-	} catch (err) {
-		console.warn('[helpfulvillage] Failed to parse ld+json for event', eventId, err);
-		return {};
-	}
+    // Clean the CDATA wrapping
+    const jsonText = cdataScript.textContent
+        .replace('//<![CDATA[', '')
+        .replace('//]]>', '')
+        .trim();
 
-	return {
+    let data;
+    try {
+        data = JSON.parse(jsonText);
+    } catch (err) {
+        console.warn('[helpfulvillage] Failed to parse ld+json for event', eventId, err);
+        return {};
+    }
+
+    return {
         startDate: data.startDate || '',
         endDate: data.endDate || '',
-		location: data.location?.name || '',
-		description: data.description || '',
-	};
+        location: data.location?.name || '',
+        description: data.description || '',
+    };
 }
 
 async function fetchhelpfulvillageEvents() {
@@ -107,33 +120,39 @@ async function fetchhelpfulvillageEvents() {
 				}
 				const helpfulvillageJson = await response.json();
 
-                const enrichedEvents = await Promise.all(
+				const enrichedEvents = await Promise.all(
 					helpfulvillageJson.map(async (event) => {
-                        const match = event.url?.match(/\/events\/(\d+)/);
-                        const eventId = match ? parseInt(match[1], 10): null;
+						const match = event.url?.match(/\/events\/(\d+)/);
+						const eventId = match ? parseInt(match[1], 10): null;
 
-                        if (!eventId) {
+						if (!eventId) {
 							console.warn('[helpfulvillage] Could not extract event ID from URL:', event.url);
-							return null;
+							return null; // Return null for events without a valid ID
 						}
 
 						const details = await getHelpfulVillageEventDetails(eventId);
+
+						if (details.description === 'membersOnly') {
+							return null; // Skip members-only events
+						}
+
 						const enrichedEvent = {
 							...event,
-                            eventId: eventId,
-                            startDate: details.startDate,
-                            endDate: details.endDate,
+							eventId: eventId,
+							startDate: details.startDate,
+							endDate: details.endDate,
 							location: details.location,
 							description: details.description,
 						};
-                        // console.log(converthelpfulvillageEventToFullCalendarEvent('America/New_York', enrichedEvent, source));
+						// console.log(converthelpfulvillageEventToFullCalendarEvent('America/New_York', enrichedEvent, source)); // uncomment to view the final event for debugging
 						return converthelpfulvillageEventToFullCalendarEvent('America/New_York', enrichedEvent, source);
 					})
 				);
 
+				const filteredEnrichedEvents = enrichedEvents.filter(event => event !== null); // filter out member's only events
 
 				return {
-					events: enrichedEvents,
+					events: filteredEnrichedEvents,
 					city: 'DC',
 					name: source.name,
 				} as EventNormalSource;

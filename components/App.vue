@@ -420,8 +420,7 @@ const transformEventSourcesResponse = (eventSources: Ref<Record<string, any>>) =
               A communal board for events around Mt Pleasant, DC!
             </div>
             <div class="blurb-sub">
-              Stop scrolling insta to find the move!<br>
-              🇵🇸 <a href="https://linktr.ee/sjpvcu">Support your local SJP</a> 🇵🇸
+              Stop scrolling insta to find the move!
             </div>
           </td>
         </tr>

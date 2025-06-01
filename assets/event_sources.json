@@ -61,7 +61,8 @@
             "/api/events/googleCalendar",
             "/api/events/squarespace",
             "/api/events/libnet",
-            "/api/events/helpfulvillage"
+            "/api/events/helpfulvillage",
+            "/api/events/wordpress-mec-rss"
         ]
     },
     "googleCalendar": [
@@ -219,6 +220,19 @@
             "filters": [
                 [["nonprofit", "outreach"], " ", ["title", "description"]]
             ]
+        }
+    ],
+    "wordpressMECRss": [
+        {
+        "url": "http://districtbridges.org/events/feed",
+        "city": "Washington, D.C.",
+        "name": "District Bridges Events (MEC RSS)",
+        "prefixTitle": "🌉 ",
+        "suffixTitle": " :mtp main st:",
+        "filters": [
+                [["nonprofit", "outreach"], "Ward 1", ["title", "description"]],
+                [["nonprofit", "outreach"], "(mt|mount|mnt)\\.? pleasant", ["title", "description"]]
+        ]
         }
     ]
 }

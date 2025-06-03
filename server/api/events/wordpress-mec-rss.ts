@@ -24,6 +24,35 @@ export default defineCachedEventHandler(async (event) => {
     swr: true,
 });
 
+function formatTitleAndDateToID(inputDate: any, title: string) {
+	const date = new Date(inputDate);
+	const year = date.getFullYear().toString().slice(-2); // Get last 2 digits of year
+	const month = (date.getMonth() + 1).toString().padStart(2, '0'); // Get month (0-11) and format to 2 digits
+	const day = date.getDate().toString().padStart(2, '0');
+	const hours = date.getHours().toString().padStart(2, '0');
+	const minutes = date.getMinutes().toString().padStart(2, '0');
+  
+    // Function to get the first three URL-compatible characters from the title
+    function getFirstThreeUrlCompatibleChars(inputTitle: string): string {
+        // Define URL-compatible characters (alphanumeric and some special characters)
+        const urlCompatibleChars = /^[A-Za-z]+$/;
+
+		// Ensure inputTitle is a string to prevent the "undefined is not iterable" error
+		inputTitle = inputTitle || 'und';
+        // Filter out non-URL-compatible characters and take the first three
+        return Array.from(inputTitle)
+            .filter(char => urlCompatibleChars.test(char))
+            .slice(0, 3)
+            .join('')
+            .toLowerCase();
+    }
+
+    // Extract the first three URL-compatible characters from the title
+    const titlePrefix = getFirstThreeUrlCompatibleChars(title);
+  
+	return `${year}${month}${day}${hours}${minutes}${titlePrefix}`;
+}
+
 async function fetchWordpressMECRssEvents() {
     console.log('Fetching wordpress MEC RSS events...');
     let wordpressMECRssSources: EventNormalSource[] | null = await useStorage().getItem('wordpressMECRssSources');
@@ -97,6 +126,8 @@ function convertMECRssEventToFullCalendarEvent(itemElement: Element, source: any
 
     // Event timezone parsing
     let eventStart: Date | null = null;
+    let eventStartUTC: Date | null = null;
+
     if (startDate && startHour) {
         try {
             const startDateTimeLuxon = DateTime.fromFormat(
@@ -108,6 +139,7 @@ function convertMECRssEventToFullCalendarEvent(itemElement: Element, source: any
             if (startDateTimeLuxon.isValid) {
                 // Convert Luxon DateTime object to a native JavaScript Date object
                 eventStart = startDateTimeLuxon.toJSDate();
+                eventStartUTC = startDateTimeLuxon.toUTC().toJSDate();
             } else {
                 console.error(`Luxon parse error for start date/time "${startDate} ${startHour}": ${startDateTimeLuxon.invalidExplanation}`);
             }
@@ -175,6 +207,9 @@ function convertMECRssEventToFullCalendarEvent(itemElement: Element, source: any
         }
     }
 
+    // Append the desciption with link for details
+	let description = cleanDescription + '<br /><a href="'+link+'">For more information check out the full page here!</a>';
+
     // Format title
 	if (source.prefixTitle) { title = source.prefixTitle + title; }
 	if (source.suffixTitle) { title += source.suffixTitle; }
@@ -184,11 +219,13 @@ function convertMECRssEventToFullCalendarEvent(itemElement: Element, source: any
     if (isDevelopment) title = tags.length + " " + title;
 
     return {
+		id: eventStartUTC ? formatTitleAndDateToID(eventStartUTC, title) : null,
         title: title,
+        org: source.name,
         start: eventStart,
         end: eventEnd,
         url: link,
-        description: cleanDescription,
+        description: description,
         location: locationName,
 		images: imageUrl ? [imageUrl] : [], //if it's an image, attach it (add checking logic later)
         tags: tags,

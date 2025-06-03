@@ -2,6 +2,7 @@ import eventSourcesJSON from '@/assets/event_sources.json';
 import { logTimeElapsedSince, serverCacheMaxAgeSeconds, serverStaleWhileInvalidateSeconds, serverFetchHeaders, applyEventTags } from '@/utils/util';
 import { DOMParser } from 'xmldom';
 import { parse } from 'node-html-parser';
+import { DateTime } from 'luxon';
 
 const isDevelopment = process.env.NODE_ENV === 'development';
 
@@ -56,7 +57,7 @@ async function fetchWordpressMECRssEvents() {
 
                 const items = Array.from(xmlDoc.getElementsByTagName('item'));
 
-                const mecEvents = items.map(itemElement => convertMECRssEventToFullCalendarEvent(itemElement, source));
+                const mecEvents = items.map(itemElement => convertMECRssEventToFullCalendarEvent(itemElement, source, 'America/New_York'));
 
                 return {
                     events: mecEvents,
@@ -79,7 +80,7 @@ function getElementTextNS(element: Element, namespaceURI: string | null, tagName
     return nodes.length > 0 ? nodes[0].textContent : null;
 }
 
-function convertMECRssEventToFullCalendarEvent(itemElement: Element, source: any) {
+function convertMECRssEventToFullCalendarEvent(itemElement: Element, source: any, timeZone: string) {
     // Standard RSS fields
     let title = itemElement.getElementsByTagName('title')[0]?.textContent || 'No Title';
     let link = itemElement.getElementsByTagName('link')[0]?.textContent || 'No Link';
@@ -93,6 +94,49 @@ function convertMECRssEventToFullCalendarEvent(itemElement: Element, source: any
     const endHour = getElementTextNS(itemElement, MEC_NAMESPACE, 'endHour');
     const locationName = getElementTextNS(itemElement, MEC_NAMESPACE, 'location');
     const category = getElementTextNS(itemElement, MEC_NAMESPACE, 'category');
+
+    // Event timezone parsing
+    let eventStart: Date | null = null;
+    if (startDate && startHour) {
+        try {
+            const startDateTimeLuxon = DateTime.fromFormat(
+                `${startDate} ${startHour}`,
+                'yyyy-MM-dd h:mm a',        
+                { zone: timeZone }  
+            );
+
+            if (startDateTimeLuxon.isValid) {
+                // Convert Luxon DateTime object to a native JavaScript Date object
+                eventStart = startDateTimeLuxon.toJSDate();
+            } else {
+                console.error(`Luxon parse error for start date/time "${startDate} ${startHour}": ${startDateTimeLuxon.invalidExplanation}`);
+            }
+        } catch (e) {
+            console.error(`Unexpected error during start date parsing: ${startDate} ${startHour}`, e);
+        }
+    }
+
+    let eventEnd: Date | null = null;
+    if (endDate && endHour) {
+        try {
+            const endDateTimeLuxon = DateTime.fromFormat(
+                `${endDate} ${endHour}`,
+                'yyyy-MM-dd h:mm a',
+                { zone: timeZone }
+            );
+
+            if (endDateTimeLuxon.isValid) {
+                eventEnd = endDateTimeLuxon.toJSDate();
+            } else {
+                console.error(`Luxon parse error for end date/time "${endDate} ${endHour}": ${endDateTimeLuxon.invalidExplanation}`);
+            }
+        } catch (e) {
+            console.error(`Unexpected error during end date parsing: ${endDate} ${endHour}`, e);
+        }
+    } else {
+        // If no explicit end date/time, assume it's the same as start
+        eventEnd = eventStart;
+    }
 
     // --- Description & Image Extraction ---
     let rawDescriptionHtml: string | null = null;
@@ -129,28 +173,6 @@ function convertMECRssEventToFullCalendarEvent(itemElement: Element, source: any
             console.warn('Error parsing HTML description for image/text:', e);
             cleanDescription = rawDescriptionHtml;
         }
-    }
-
-
-    // Combine date and time for FullCalendar start/end properties
-    let eventStart: Date | null = null;
-    if (startDate && startHour) {
-        try {
-            eventStart = new Date(`${startDate} ${startHour}`);
-        } catch (e) {
-            console.error(`Error parsing start date/time: ${startDate} ${startHour}`, e);
-        }
-    }
-
-    let eventEnd: Date | null = null;
-    if (endDate && endHour) {
-        try {
-            eventEnd = new Date(`${endDate} ${endHour}`);
-        } catch (e) {
-            console.error(`Error parsing end date/time: ${endDate} ${endHour}`, e);
-        }
-    } else {
-        eventEnd = eventStart; // If no explicit end date/time, assume it's the same as start
     }
 
     // Format title

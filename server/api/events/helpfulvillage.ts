@@ -99,7 +99,7 @@ async function getHelpfulVillageEventDetails(eventId: number): Promise<{ startDa
 async function fetchhelpfulvillageEvents() {
 	const startDate = new Date();
 	const endDate = new Date();
-	endDate.setDate(startDate.getDate() + 60);
+	endDate.setDate(startDate.getDate() + 30);
 	const formattedStart = startDate.toISOString().split('T')[0];
 	const formattedEnd = endDate.toISOString().split('T')[0];
 

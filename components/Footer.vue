@@ -24,6 +24,7 @@ onMounted(() => {
           <a href="/">home</a> |
           <a href="/list">list of cool groups</a> |
           <a href="/contributing">how to contribute</a> | 
+          <a href="/thanks">a thank you to rva.rip</a> | 
           <a href="https://github.com/beckspark/manplesa/">source code</a> 
         </div>
         <div class="desc no-toppy">

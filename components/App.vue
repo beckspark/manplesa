@@ -429,30 +429,18 @@ const transformEventSourcesResponse = (eventSources: Ref<Record<string, any>>) =
     <FullCalendar ref="calendarRef" :options='calendarOptions' />
     <div style="display: flex; align-items: center; flex-direction: row;">
       <div class="desc" style="padding-bottom: 0;">
-        <p>The Mount Pleasant Community Calendar was built with the communal hope that no person in Mt Pleasant should be without community. The site will
+        <p>The Mount Pleasant Community Calendar was built with the hope that no person in Mt Pleasant should be without community. The site will
           always be free, without frills, and remain a public utility. The events here are drawn from various 
           <a href="https://github.com/beckspark/manplesa/blob/main/assets/event_sources.json">organizer listings</a> that
-          contributors (thank you!) have provided. Building community is the focus of this project. If you'd like to become
-          a contributor of events, check out our contributing guide <a href="/contributing">here</a>! The events presented here are in a
-          constant state of community-based vetting; don't hesitate to provide feedback! For suggestions and questions
+          contributors (thank you!) have provided. For suggestions and questions
           email <a href="mailto:mtpleasantcommunitycalendar@gmail.com">mtpleasantcommunitycalendar@gmail.com</a> &lt;3</p>
         <p>Before making plans, consider checking with venue staff or event organizers directly. This site is not
           affiliated with any events listed.</p>
-        <p>Still can't figure out what to do? 
-          <ul style="line-height: 1.5em">
-            <li>Bored? Roll up to <a href="https://goo.gl/maps/7hE5ARFYcE7KTgun7">scuff</a> and say hi to the punks</li>
-            <li>Looking for music? Check out <a href="https://www.restlessrva.com/">restless</a> for local concerts happening. </li>
-            <li>Like sports? Sign up for <a href="https://stonewallrichmond.leagueapps.com/leagues/">stonewall sports</a>!!! Hot athletic gays!!!!!</li>
-            <li>Don't wanna go outside? Play <a href="https://play.half.earth//">half earth socialism</a>!!!</li>
-            <li>Wanna find more groups? Check out our <a href="/list">list of organizations and groups</a> in RVA</li>
-          </ul></p>
-        <p>Not in Mt. Pleasant or DC??? Check out some of the sites we drew this website source code from-- <a href="https://rva.rip/">rva.rip</a>, <a href="https://anarchism.nyc/">anarchism.nyc</a>, 
-        <a href="https://bay.lgbt/">bay.lgbt</a>, and <a href="https://anarchism.boston/">anarchism.boston</a>.
-        This site wouldn't exist without them, and they're all run by trans folks.</p>
-        <p>Want your event listed here? Start making a <a href="/contributing">public google calendar</a> for your events. 
-          Once published, request inclusion of your event feed by sending your Google Calendar ID via a 
-          <a href="https://github.com/beckspark/manplesa/issues">new GitHub issue</a> or by emailing us at mountpleasantcommunitycalendar@gmail.com! 
-          You may also provide feedback, fixes, or improvements through either means</p>
+        <p>Events added to the calendar should be generally accessible to the public, community oriented, and generally low-cost to attend.
+          Whether it’s a screening, festival, pop-up, club meeting, or digital community, we aim to consolidate all of that information here on our site for ease of access.
+          If you’re interested in starting a club, reach out and we can help promote your events as well.</p>
+        <p>Want your event listed here? You can either submit an event using the button and form above or by making a public google calendar for your events.
+        Once published, request inclusion of your event feed by sending your Google Calendar ID via a new GitHub issue or by emailing us!</p>
       </div>
     </div>
     <Footer />

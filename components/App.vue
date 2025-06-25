@@ -414,13 +414,23 @@ const transformEventSourcesResponse = (eventSources: Ref<Record<string, any>>) =
     <table style="width:100%;">
       <tbody>
         <tr>
-          <td class="blurb-image"> <div v-html="svgGrave"></div> </td>
+          <td class="blurb-image"></td>
           <td>
             <div class="blurb-text">
               A communal board for events around Mt Pleasant, DC!
             </div>
             <div class="blurb-sub">
-              Stop scrolling insta to find the move!
+              <p>A free to use digital bulletin board sharing accessible and local events, programming, and clubs across Mt. Pleasant. This site was built and is maintained by neighbors of Mt. Pleasant.
+              The Mount Pleasant Community Calendar was built with the hope that no person in Mt Pleasant should be without community. The site will
+                always be free, without frills, and remain a public utility. The events here are drawn from various 
+                <a href="https://github.com/beckspark/manplesa/blob/main/assets/event_sources.json">organizer listings</a> that
+                contributors (thank you!) have provided. For suggestions and questions
+                email <a href="mailto:mtpleasantcommunitycalendar@gmail.com">mtpleasantcommunitycalendar@gmail.com</a> &lt;3</p>
+                <p>
+                  <a href="https://forms.gle/fsGEFULbUSke29UGA" class="button-link">
+                    Submit an Event!
+                  </a> 
+                </p>
             </div>
           </td>
         </tr>
@@ -429,11 +439,6 @@ const transformEventSourcesResponse = (eventSources: Ref<Record<string, any>>) =
     <FullCalendar ref="calendarRef" :options='calendarOptions' />
     <div style="display: flex; align-items: center; flex-direction: row;">
       <div class="desc" style="padding-bottom: 0;">
-        <p>The Mount Pleasant Community Calendar was built with the hope that no person in Mt Pleasant should be without community. The site will
-          always be free, without frills, and remain a public utility. The events here are drawn from various 
-          <a href="https://github.com/beckspark/manplesa/blob/main/assets/event_sources.json">organizer listings</a> that
-          contributors (thank you!) have provided. For suggestions and questions
-          email <a href="mailto:mtpleasantcommunitycalendar@gmail.com">mtpleasantcommunitycalendar@gmail.com</a> &lt;3</p>
         <p>Before making plans, consider checking with venue staff or event organizers directly. This site is not
           affiliated with any events listed.</p>
         <p>Events added to the calendar should be generally accessible to the public, community oriented, and generally low-cost to attend.

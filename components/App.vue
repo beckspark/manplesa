@@ -439,7 +439,7 @@ const transformEventSourcesResponse = (eventSources: Ref<Record<string, any>>) =
         <p>Events added to the calendar should be generally accessible to the public, community oriented, and generally low-cost to attend.
           Whether it’s a screening, festival, pop-up, club meeting, or digital community, we aim to consolidate all of that information here on our site for ease of access.
           If you’re interested in starting a club, reach out and we can help promote your events as well.
-          Want your event listed here? You can either submit an event using the button and form above or by making a public google calendar for your events.
+          Want your event listed here? You can either submit an event the form <a href="https://forms.gle/fsGEFULbUSke29UGA">here</a> or by making a public google calendar for your events.
           Once published, request inclusion of your event feed by sending your Google Calendar ID via a new GitHub issue or by emailing us!</p>
       </div>
     </div>

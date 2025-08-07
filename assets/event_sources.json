@@ -176,6 +176,7 @@
                 [["community", "art"], "arts_&_crafts", "eventTag"],
                 [["community", "diy"], "makers_&_diy_program", "eventTag"],
                 [["community", "music"], "musical_performance", "eventTag"],
+                [["community", "yoga"], "yoga", "title"],
                 ["exercise", "fitness", "title"],
                 [["community","movies"], "Movie", "title"],
                 ["diy", "yarn", "title"],

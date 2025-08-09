@@ -154,7 +154,7 @@ function convertlibnetEventToFullCalendarEvent(timeZone: string, e, source) {
 		end: end.toUTC().toJSDate(),
 		url: url,
 		description: description,
-		images: e.featured_image ? [e.featured_image] : [],//if it's an image, attach it (add checking logic later)
+		images: e.event_image ? ['https://static.libnet.info/images/events/dclibrary/'+e.event_image] : [],//if it's an image, attach it (add checking logic later)
 		location: location,
 		tags,
 	};

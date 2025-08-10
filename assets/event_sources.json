@@ -9,7 +9,6 @@
         "tagsToShow": [
             [
                 {"name": "activism", "fullName": "Critical Work", "defaultValue": "true"},
-                {"name": "esl", "fullName": "ESL / Multilingual", "defaultValue": "true"},
                 {"name": "palestine", "fullName": "🇵🇸 Palestine", "defaultValue": "true"},
                 {"name": "socialism", "fullName": "🚩 Socialism", "defaultValue": "true"},
                 {"name": "ecology", "fullName": "🌿 Ecology", "defaultValue": "true"},
@@ -38,6 +37,7 @@
             ],
             [
                 {"name": "interests", "fullName": "Interest & Hobbies", "defaultValue": "true"},
+                {"name": "esl", "fullName": "ESL / Multilingual", "defaultValue": "true"},
                 {"name": "diy", "fullName": "🔧 DIY", "defaultValue": "true"},
                 {"name": "books", "fullName": "📚 Books", "defaultValue": "true"},
                 {"name": "book_club", "fullName": "📚 Book Club", "defaultValue": "true"},
@@ -50,6 +50,7 @@
                 {"name": "other", "fullName": "Misc", "defaultValue": "true"},
                 {"name": "free stuff", "fullName": "🈶 Free Stuff", "defaultValue": "true"},
                 {"name": "volunteering", "fullName": "♻️ Volunteering", "defaultValue": "true"},
+                {"name": "religion", "fullName": "🙏 Religious/Spiritual", "defaultValue": "true"},
                 {"name": "market", "fullName": "🛍️ Market", "defaultValue": "true"},
                 {"name": "transgender", "fullName": "🏳️‍⚧️ Transgeder :3", "defaultValue": "true"},
                 {"name": "lgbtq", "fullName": "🏳️‍🌈 LGBTQ", "defaultValue": "true"},
@@ -226,7 +227,7 @@
             "prefixTitle": "🏡 ",
             "suffixTitle": " :mtp village:",
             "filters": [
-                [["nonprofit", "outreach"], " ", ["title", "description"]]
+                [["community", "outreach"]]
             ]
         }
     ],
@@ -240,6 +241,16 @@
         "filters": [
                 [["nonprofit", "outreach"], "Ward 1", ["title", "description"]],
                 [["nonprofit", "outreach"], "(mt|mount|mnt)\\.? pleasant", ["title", "description"]]
+        ]
+        },
+        {
+        "url": "https://all-souls.org/events/feed",
+        "city": "Washington, D.C.",
+        "name": "All Souls Unitarian Church",
+        "prefixTitle": "🙏 ",
+        "suffixTitle": " :all souls church:",
+        "filters": [
+                [["community", "religion"]]
         ]
         }
     ]

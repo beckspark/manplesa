@@ -13,8 +13,7 @@
                 {"name": "socialism", "fullName": "🚩 Socialism", "defaultValue": "true"},
                 {"name": "ecology", "fullName": "🌿 Ecology", "defaultValue": "true"},
                 {"name": "organizing", "fullName": "🤝 Organizing", "defaultValue": "true"},
-                {"name": "outreach", "fullName": "Outreach", "defaultValue": "true"},
-                {"name": "family", "fullName": "👪 Family", "defaultValue": "true"}
+                {"name": "outreach", "fullName": "Outreach", "defaultValue": "true"}
             ],
             [
                 {"name": "activities", "fullName": "Activities", "defaultValue": "true"},
@@ -37,6 +36,7 @@
             ],
             [
                 {"name": "interests", "fullName": "Interest & Hobbies", "defaultValue": "true"},
+                {"name": "family", "fullName": "👪 Family", "defaultValue": "true"},
                 {"name": "esl", "fullName": "ESL / Multilingual", "defaultValue": "true"},
                 {"name": "diy", "fullName": "🔧 DIY", "defaultValue": "true"},
                 {"name": "books", "fullName": "📚 Books", "defaultValue": "true"},
@@ -75,7 +75,7 @@
                 [["nonprofit", "outreach"], "Planning", ["title", "description"]],
                 ["unknownType", "This is a tag inserted for code purposes, this tag represents all tags which won't be categorized", "title"]
             ],
-            "prefixTitle": ":mtp cc: "
+            "prefixTitle": " :mtp cc:"
         }
     ],
     "squarespace": [
@@ -175,7 +175,7 @@
                 [["community", "family"], "family_program", "eventTag"],
                 [["community", "family", "books"], "story_time", "eventTag"],
                 [["community", "family"], "back_to_school", "eventTag"],
-                [["community", "books"], "book_club", "eventTag"],
+                [["community", "book_club"], "book_club", "eventTag"],
                 [["community", "outreach"], "outreach", "eventTag"],
                 [["community", "art"], "arts_&_crafts", "eventTag"],
                 [["community", "diy"], "makers_&_diy_program", "eventTag"],
@@ -248,9 +248,9 @@
         "city": "Washington, D.C.",
         "name": "All Souls Unitarian Church",
         "prefixTitle": "🙏 ",
-        "suffixTitle": " :all souls church:",
+        "suffixTitle": " :all souls:",
         "filters": [
-                [["community", "religion"]]
+            [["community", "religion"]]
         ]
         }
     ]

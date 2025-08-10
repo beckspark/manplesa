@@ -121,8 +121,8 @@ async function fetchlibnetEvents() {
 };
 
 function convertlibnetEventToFullCalendarEvent(timeZone: string, e, source) {
-	let start = DateTime.fromSQL(e.raw_start_time).setZone(timeZone);
-	let end = DateTime.fromSQL(e.raw_end_time).setZone(timeZone);
+	let start = DateTime.fromSQL(e.raw_start_time, { zone: timeZone });
+	let end = DateTime.fromSQL(e.raw_end_time, { zone: timeZone });
 	let url = e.url.replace(/([^:]\/)\/+/g, '$1'); // Remove extra forward slash
 	let title = e.title;
 	let description = e.description;

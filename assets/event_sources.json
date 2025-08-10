@@ -9,6 +9,7 @@
         "tagsToShow": [
             [
                 {"name": "activism", "fullName": "Critical Work", "defaultValue": "true"},
+                {"name": "esl", "fullName": "ESL / Multilingual", "defaultValue": "true"},
                 {"name": "palestine", "fullName": "🇵🇸 Palestine", "defaultValue": "true"},
                 {"name": "socialism", "fullName": "🚩 Socialism", "defaultValue": "true"},
                 {"name": "ecology", "fullName": "🌿 Ecology", "defaultValue": "true"},
@@ -171,12 +172,18 @@
             "suffixTitle": " :mtp library:",
             "filters": [
                 [["community", "family"], "family_program", "eventTag"],
+                [["community", "family", "books"], "story_time", "eventTag"],
+                [["community", "family"], "back_to_school", "eventTag"],
                 [["community", "books"], "book_club", "eventTag"],
                 [["community", "outreach"], "outreach", "eventTag"],
                 [["community", "art"], "arts_&_crafts", "eventTag"],
                 [["community", "diy"], "makers_&_diy_program", "eventTag"],
                 [["community", "music"], "musical_performance", "eventTag"],
                 [["community", "yoga"], "yoga", "title"],
+                [["community", "esl"], "esl_/_bilingual_programs", "eventTag"],
+                [["community", "food"], "breakfast", ["title", "description"]],
+                [["community", "discussion"], "conversation_circle", "eventTag"],
+                ["community", "legal_clinic", "eventTag"],
                 ["exercise", "fitness", "title"],
                 [["community","movies"], "Movie", "title"],
                 ["diy", "yarn", "title"],

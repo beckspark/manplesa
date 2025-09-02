@@ -73,6 +73,8 @@
             "googleCalendarId": "mtpleasantcommunitycalendar@gmail.com",
             "filters": [
                 [["nonprofit", "outreach"], "Planning", ["title", "description"]],
+                [["market"], "market", ["title","description"]],
+                [["community"], "community", ["title","description"]],
                 ["unknownType", "This is a tag inserted for code purposes, this tag represents all tags which won't be categorized", "title"]
             ],
             "prefixTitle": " :mtp cc:"

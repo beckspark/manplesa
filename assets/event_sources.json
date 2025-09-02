@@ -72,9 +72,9 @@
             "name": "MtPCC Manually Added Events",
             "googleCalendarId": "mtpleasantcommunitycalendar@gmail.com",
             "filters": [
+                ["community"],
                 [["nonprofit", "outreach"], "Planning", ["title", "description"]],
                 [["market"], "market", ["title","description"]],
-                [["community"], "community", ["title","description"]],
                 ["unknownType", "This is a tag inserted for code purposes, this tag represents all tags which won't be categorized", "title"]
             ],
             "prefixTitle": " :mtp cc:"

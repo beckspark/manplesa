@@ -47,13 +47,32 @@ export function getAllTags(): Tag[] {
   });
 
   const tagsHidden = new Set(eventSourcesJSON.appConfig.tagsHidden);
-  const tagsHeader = new Set(eventSourcesJSON.appConfig.tagsHeader.map(tag => tag.name));
+  const tagsHeaderMap = new Map(eventSourcesJSON.appConfig.tagsHeader.map(tag => [tag.name, tag]));
+  const tagsToShowMap = new Map();
 
-  // Convert the set of tags into an array of Tag objects, setting visibility based on tagsHidden
-  return Array.from(tagsSet).map(tag => ({
-    name: tag,
-    isVisible: !tagsHidden.has(tag),  //Whether a tag is visible, this is meant to be updated on the user side
-    isHidden: tagsHidden.has(tag),    //Whether a tag indicates that it ought to be hidden. This is permanent, if a tag has isHidden true then any event with it ought to be hidden forever
-    isHeader: tagsHeader.has(tag)     //Whether a tag is a header tag, this means that it's a pre-requisite that atleast one visible Header tag should be on an event for the event to be visible at all.
-  }));
+  // Flatten tagsToShow and create a map for default values
+  eventSourcesJSON.appConfig.tagsToShow.flat().forEach(tag => {
+    tagsToShowMap.set(tag.name, tag);
+  });
+
+  // Convert the set of tags into an array of Tag objects, setting visibility based on defaultValue
+  return Array.from(tagsSet).map(tag => {
+    const headerTag = tagsHeaderMap.get(tag);
+    const showTag = tagsToShowMap.get(tag);
+
+    // Determine default visibility: use defaultValue from config, fallback to !tagsHidden.has(tag)
+    let defaultVisible = !tagsHidden.has(tag);
+    if (headerTag && headerTag.defaultValue !== undefined) {
+      defaultVisible = headerTag.defaultValue === "true";
+    } else if (showTag && showTag.defaultValue !== undefined) {
+      defaultVisible = showTag.defaultValue === "true";
+    }
+
+    return {
+      name: tag,
+      isVisible: defaultVisible,  //Whether a tag is visible, respects defaultValue from config
+      isHidden: tagsHidden.has(tag),    //Whether a tag indicates that it ought to be hidden. This is permanent, if a tag has isHidden true then any event with it ought to be hidden forever
+      isHeader: tagsHeaderMap.has(tag)     //Whether a tag is a header tag, this means that it's a pre-requisite that atleast one visible Header tag should be on an event for the event to be visible at all.
+    };
+  });
 }

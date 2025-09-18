@@ -64,7 +64,8 @@
             "/api/events/squarespace",
             "/api/events/libnet",
             "/api/events/helpfulvillage",
-            "/api/events/wordpress-mec-rss"
+            "/api/events/wordpress-mec-rss",
+            "/api/events/eventbrite"
         ]
     },
     "googleCalendar": [
@@ -220,6 +221,29 @@
                 ["Mt Pleasant","Mt Pleasant Branch - DC Public Library"]
             ]
         }
+    ],
+    "eventbriteAccounts": [
+        {
+            "name": "Bold Fork Books",
+            "url": "https://www.eventbrite.com/o/bold-fork-books-36931109723",
+            "city": "Washington, D.C.",
+            "prefixTitle": "📚🍴 ",
+            "suffixTitle": " :bold fork books:",
+            "filters": [
+                [["commercial", "books", "food", "community"], "book", ["title", "description"]],
+                [["commercial", "books", "food", "community"], "author", ["title", "description"]],
+                [["commercial", "books", "food", "community"], "cookbook", ["title", "description"]],
+                [["commercial", "books", "food", "community"], "signing", ["title", "description"]],
+                [["commercial", "books", "food", "discussion"], "club", ["title", "description"]],
+                [["commercial", "books", "food", "community"], "reading", ["title", "description"]],
+                [["commercial", "food", "community"], "culinary", ["title", "description"]],
+                [["commercial", "food", "community"], "workshop", ["title", "description"]],
+                [["commercial", "food", "books"], "cooking", ["title", "description"]],
+                ["commercial", "food", "books"]
+            ]
+        }
+    ],
+    "eventbriteSingleEventSeries": [
     ],
     "helpfulvillage": [
         {

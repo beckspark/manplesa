@@ -17,7 +17,23 @@ function extractSourceNames(urls: string[]): string[] {
 
 export function getAllTags(): Tag[] {
   const tagsSet = new Set<string>();
-  
+
+  // Add all tags from tagsToShow (flatten all groups)
+  eventSourcesJSON.appConfig.tagsToShow.forEach(group => {
+    if (Array.isArray(group)) {
+      group.forEach(tag => {
+        if (typeof tag === 'object' && tag.name) {
+          tagsSet.add(tag.name);
+        }
+      });
+    }
+  });
+
+  // Add header tags
+  eventSourcesJSON.appConfig.tagsHeader.forEach(tag => {
+    tagsSet.add(tag.name);
+  });
+
   // Extract the source names from the configuration
   const sourceNames = extractSourceNames(eventSourcesJSON.appConfig.eventApiToGrab);
 

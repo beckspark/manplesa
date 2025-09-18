@@ -9,13 +9,11 @@
         "tagsToShow": [
             [
                 {"name": "activism", "fullName": "Critical Work", "defaultValue": "true"},
-                {"name": "esl", "fullName": "ESL / Multilingual", "defaultValue": "true"},
                 {"name": "palestine", "fullName": "🇵🇸 Palestine", "defaultValue": "true"},
                 {"name": "socialism", "fullName": "🚩 Socialism", "defaultValue": "true"},
                 {"name": "ecology", "fullName": "🌿 Ecology", "defaultValue": "true"},
                 {"name": "organizing", "fullName": "🤝 Organizing", "defaultValue": "true"},
-                {"name": "outreach", "fullName": "Outreach", "defaultValue": "true"},
-                {"name": "family", "fullName": "👪 Family", "defaultValue": "true"}
+                {"name": "outreach", "fullName": "Outreach", "defaultValue": "true"}
             ],
             [
                 {"name": "activities", "fullName": "Activities", "defaultValue": "true"},
@@ -38,6 +36,8 @@
             ],
             [
                 {"name": "interests", "fullName": "Interest & Hobbies", "defaultValue": "true"},
+                {"name": "family", "fullName": "👪 Family", "defaultValue": "true"},
+                {"name": "esl", "fullName": "ESL / Multilingual", "defaultValue": "true"},
                 {"name": "diy", "fullName": "🔧 DIY", "defaultValue": "true"},
                 {"name": "books", "fullName": "📚 Books", "defaultValue": "true"},
                 {"name": "book_club", "fullName": "📚 Book Club", "defaultValue": "true"},
@@ -50,6 +50,7 @@
                 {"name": "other", "fullName": "Misc", "defaultValue": "true"},
                 {"name": "free stuff", "fullName": "🈶 Free Stuff", "defaultValue": "true"},
                 {"name": "volunteering", "fullName": "♻️ Volunteering", "defaultValue": "true"},
+                {"name": "religion", "fullName": "🙏 Religious/Spiritual", "defaultValue": "true"},
                 {"name": "market", "fullName": "🛍️ Market", "defaultValue": "true"},
                 {"name": "transgender", "fullName": "🏳️‍⚧️ Transgeder :3", "defaultValue": "true"},
                 {"name": "lgbtq", "fullName": "🏳️‍🌈 LGBTQ", "defaultValue": "true"},
@@ -71,10 +72,12 @@
             "name": "MtPCC Manually Added Events",
             "googleCalendarId": "mtpleasantcommunitycalendar@gmail.com",
             "filters": [
+                ["community"],
                 [["nonprofit", "outreach"], "Planning", ["title", "description"]],
+                [["market"], "market", ["title","description"]],
                 ["unknownType", "This is a tag inserted for code purposes, this tag represents all tags which won't be categorized", "title"]
             ],
-            "prefixTitle": ":mtp cc: "
+            "prefixTitle": " :mtp cc:"
         }
     ],
     "squarespace": [
@@ -174,7 +177,7 @@
                 [["community", "family"], "family_program", "eventTag"],
                 [["community", "family", "books"], "story_time", "eventTag"],
                 [["community", "family"], "back_to_school", "eventTag"],
-                [["community", "books"], "book_club", "eventTag"],
+                [["community", "book_club"], "book_club", "eventTag"],
                 [["community", "outreach"], "outreach", "eventTag"],
                 [["community", "art"], "arts_&_crafts", "eventTag"],
                 [["community", "diy"], "makers_&_diy_program", "eventTag"],
@@ -226,7 +229,7 @@
             "prefixTitle": "🏡 ",
             "suffixTitle": " :mtp village:",
             "filters": [
-                [["nonprofit", "outreach"], " ", ["title", "description"]]
+                [["community", "outreach"]]
             ]
         }
     ],
@@ -240,6 +243,16 @@
         "filters": [
                 [["nonprofit", "outreach"], "Ward 1", ["title", "description"]],
                 [["nonprofit", "outreach"], "(mt|mount|mnt)\\.? pleasant", ["title", "description"]]
+        ]
+        },
+        {
+        "url": "https://all-souls.org/events/feed",
+        "city": "Washington, D.C.",
+        "name": "All Souls Unitarian Church",
+        "prefixTitle": "🙏 ",
+        "suffixTitle": " :all souls:",
+        "filters": [
+            [["community", "religion"]]
         ]
         }
     ]

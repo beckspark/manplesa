@@ -1,5 +1,5 @@
 import eventSourcesJSON from '@/assets/event_sources.json';
-import { logTimeElapsedSince, serverCacheMaxAgeSeconds, serverFetchHeaders, serverStaleWhileInvalidateSeconds } from '~~/utils/util';
+import { logTimeElapsedSince, serverCacheMaxAgeSeconds, serverFetchHeaders, serverStaleWhileInvalidateSeconds, applyEventTags } from '~~/utils/util';
 import { JSDOM } from 'jsdom';
 import { DateTime } from 'luxon';
 
@@ -43,8 +43,90 @@ async function fetchEventbriteEvents() {
 					.then(res => res.text())
 					.then(async html => {
 						const dom = new JSDOM(html);
-						const eventsRaw = JSON.parse(dom.window.document.querySelectorAll('script[type="application/ld+json"]')[1].innerHTML)
-							.map(event => convertSchemaDotOrgEventToFullCalendarEvent(event, source.name));
+						const scripts = dom.window.document.querySelectorAll('script[type="application/ld+json"]');
+
+						if (scripts.length < 2) {
+							// Let's try the first script if we only have one
+							if (scripts.length === 1) {
+								try {
+									const parsedData = JSON.parse(scripts[0].innerHTML);
+									const eventsArray = Array.isArray(parsedData) ? parsedData : (parsedData?.events || parsedData?.itemListElement || []);
+									const eventsRaw = eventsArray.map(eventWrapper => {
+										const event = eventWrapper.item || eventWrapper;
+										try {
+											const convertedEvent = convertSchemaDotOrgEventToFullCalendarEvent(event, source);
+											// Apply prefix and suffix titles
+											if (source.prefixTitle) { convertedEvent.title = source.prefixTitle + convertedEvent.title; }
+											if (source.suffixTitle) { convertedEvent.title += source.suffixTitle; }
+											return convertedEvent;
+										} catch (e) {
+											console.warn(`${source.name}: Skipping event due to conversion error:`, e.message);
+											return null;
+										}
+									}).filter(event => event !== null);
+									const events = Promise.all(eventsRaw.map(async (rawEvent) => {
+										const isLongerThan3Days = (rawEvent.end.getTime() - rawEvent.start.getTime()) / (1000 * 3600 * 24) > 3;
+										if (isLongerThan3Days) {
+											const eventSeries = await getEventSeries(rawEvent.url);
+											return eventSeries.map(event => convertEventbriteAPIEventToFullCalendarEvent(event, source.name));
+										} else {
+											return rawEvent;
+										}
+									}));
+									const newEvents = (await events).flat();
+									return {
+										events: newEvents,
+										city: source.city,
+										name: source.name,
+									} as EventNormalSource;
+								} catch (e) {
+									// Silently handle parsing errors
+								}
+							}
+							return {
+								events: [],
+								city: source.city,
+								name: source.name,
+							} as EventNormalSource;
+						}
+
+						let parsedData;
+						try {
+							parsedData = JSON.parse(scripts[1].innerHTML);
+						} catch (e) {
+							console.error(`Error parsing JSON for ${source.name}:`, e);
+							return {
+								events: [],
+								city: source.city,
+								name: source.name,
+							} as EventNormalSource;
+						}
+
+						// Ensure we have an array to work with
+						let eventsArray = [];
+						if (Array.isArray(parsedData)) {
+							eventsArray = parsedData;
+						} else if (parsedData?.events) {
+							eventsArray = parsedData.events;
+						} else if (parsedData?.itemListElement) {
+							eventsArray = parsedData.itemListElement;
+						} else if (parsedData?.['@graph']) {
+							eventsArray = parsedData['@graph'];
+						}
+						const eventsRaw = eventsArray.map(eventWrapper => {
+							// Handle ListItem structure where actual event is in .item
+							const event = eventWrapper.item || eventWrapper;
+							try {
+								const convertedEvent = convertSchemaDotOrgEventToFullCalendarEvent(event, source);
+								// Apply prefix and suffix titles
+								if (source.prefixTitle) { convertedEvent.title = source.prefixTitle + convertedEvent.title; }
+								if (source.suffixTitle) { convertedEvent.title += source.suffixTitle; }
+								return convertedEvent;
+							} catch (e) {
+								console.warn(`${source.name}: Skipping event due to conversion error:`, e.message);
+								return null;
+							}
+						}).filter(event => event !== null);
 
 						// Since public & private Eventbrite endpoints provides a series of events as a single event, we need to split them up using their API.
 						const events = Promise.all(eventsRaw.map(async (rawEvent) => {
@@ -100,38 +182,43 @@ async function getEventSeries(event_url: string) {
 	};
 }
 
-function convertSchemaDotOrgEventToFullCalendarEvent(item, sourceName) {
+function convertSchemaDotOrgEventToFullCalendarEvent(item, source) {
 	// If we have a `geo` object, format it to geoJSON.
-	var geoJSON = (item.location.geo) ? {
+	var geoJSON = (item.location?.geo) ? {
 		type: "Point",
 		coordinates: [
-			item.location.geo.longitude,
-			item.location.geo.latitude
+			item.location.geo?.longitude,
+			item.location.geo?.latitude
 		]
 		// Otherwise, set it to null.
 	} : null;
 
+	const title = `${item.name} @ ${source.name}`;
+	const description = item.description || '';
+	const tags = applyEventTags(source, title, description);
+
 	return {
-		title: `${item.name} @ ${sourceName}`,
+		title: title,
 		// Converts from System Time to UTC.
 		start: DateTime.fromISO(item.startDate).toUTC().toJSDate(),
 		end: DateTime.fromISO(item.endDate).toUTC().toJSDate(),
 		url: item.url,
+		tags: tags,
 		extendedProps: {
 			description: item.description || null,
 			image: item.image,
 			location: {
 				geoJSON: geoJSON,
 				eventVenue: {
-					name: item.location.name,
+					name: item.location?.name || null,
 					address: {
-						streetAddress: item.location.streetAddress,
-						addressLocality: item.location.addressLocality,
-						addressRegion: item.location.addressRegion,
-						postalCode: item.location.postalCode,
-						addressCountry: item.location.addressCountry
+						streetAddress: item.location?.streetAddress || null,
+						addressLocality: item.location?.addressLocality || null,
+						addressRegion: item.location?.addressRegion || null,
+						postalCode: item.location?.postalCode || null,
+						addressCountry: item.location?.addressCountry || null
 					},
-					geo: item.location?.geo
+					geo: item.location?.geo || null
 				}
 			}
 		}

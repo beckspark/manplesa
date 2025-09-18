@@ -225,7 +225,8 @@ const updateCalendarHeight = () => {
   calendarOptions.value = {
     ...calendarOptions.value,
     weekNumbers: getWindowWidth() < 350 ? false : true,
-    dayMaxEventRows: updateDayMaxEventRows()
+    dayMaxEventRows: updateDayMaxEventRows(),
+    timeZone: 'America/New_York'
   };
 };
 

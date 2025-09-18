@@ -150,8 +150,8 @@ function convertlibnetEventToFullCalendarEvent(timeZone: string, e, source) {
 		id: formatTitleAndDateToID(start.toUTC().toJSDate(), title),
 		title: title,
 		org: source.name + ": " + e.calendar,
-		start: start.toISO(),
-		end: end.toISO(),
+		start: start.toUTC().toJSDate(),
+		end: end.toUTC().toJSDate(),
 		url: url,
 		description: description,
 		images: e.event_image ? ['https://static.libnet.info/images/events/dclibrary/' + e.event_image] : [],//if it's an image, attach it (add checking logic later)

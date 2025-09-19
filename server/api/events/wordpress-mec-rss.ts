@@ -54,17 +54,24 @@ function formatTitleAndDateToID(inputDate: any, title: string) {
 }
 
 async function fetchWordpressMECRssEvents() {
-    console.log('Fetching wordpress MEC RSS events...');
+    console.log('=== Fetching wordpress MEC RSS events ===');
+    console.log('Sources to fetch:', eventSourcesJSON.wordpressMECRss.length);
     let wordpressMECRssSources: EventNormalSource[] | null = await useStorage().getItem('wordpressMECRssSources');
 
     try {
         wordpressMECRssSources = await Promise.all(
             eventSourcesJSON.wordpressMECRss.map(async (source) => {
-                
-                const response = await fetch(source.url, { headers: serverFetchHeaders });
-                if (!response.ok) {
-                    throw new Error(`HTTP error! Status: ${response.status} from ${source.url}`);
-                }
+                try {
+                    console.log(`Fetching from ${source.name}: ${source.url}`);
+                    const response = await fetch(source.url, { headers: serverFetchHeaders });
+                    if (!response.ok) {
+                        console.error(`HTTP error! Status: ${response.status} from ${source.url}`);
+                        return {
+                            events: [],
+                            city: source.city,
+                            name: source.name,
+                        } as EventNormalSource;
+                    }
                 const xmlText = await response.text();
 
 
@@ -86,19 +93,41 @@ async function fetchWordpressMECRssEvents() {
 
                 const items = Array.from(xmlDoc.getElementsByTagName('item'));
 
-                const mecEvents = items.map(itemElement => convertMECRssEventToFullCalendarEvent(itemElement, source, 'America/New_York'));
+                const mecEvents = await Promise.all(items.map(async itemElement => {
+                    if (source.isMEC) {
+                        return convertMECRssEventToFullCalendarEvent(itemElement, source, 'America/New_York');
+                    } else {
+                        const event = convertStandardRssEventToFullCalendarEvent(itemElement, source, 'America/New_York');
+                        // If event needs date extraction, scrape the individual page
+                        if (event.extendedProps?.needsDateExtraction && event.url) {
+                            return await enhanceEventWithPageData(event);
+                        }
+                        return event;
+                    }
+                }));
 
-                return {
-                    events: mecEvents,
-                    city: source.city,
-                    name: source.name,
-                } as EventNormalSource;
+                    console.log(`Source ${source.name} processed ${mecEvents.length} events`);
+                    return {
+                        events: mecEvents,
+                        city: source.city,
+                        name: source.name,
+                    } as EventNormalSource;
+                } catch (error) {
+                    console.error(`Error fetching from ${source.name}:`, error);
+                    return {
+                        events: [],
+                        city: source.city,
+                        name: source.name,
+                    } as EventNormalSource;
+                }
             })
         );
         await useStorage().setItem('wordpressMECRssSources', wordpressMECRssSources);
+        console.log(`Final result: ${wordpressMECRssSources.length} sources with total events:`,
+                   wordpressMECRssSources.map(s => `${s.name}: ${s.events.length}`));
     } catch (error) {
         console.error('Error fetching wordpress MEC RSS events:', error);
-        
+
         return [];
     }
     return wordpressMECRssSources;
@@ -234,4 +263,184 @@ function convertMECRssEventToFullCalendarEvent(itemElement: Element, source: any
             creator: creator
         }
     };
+}
+
+function convertStandardRssEventToFullCalendarEvent(itemElement: Element, source: any, timeZone: string) {
+    // Standard RSS fields
+    let title = itemElement.getElementsByTagName('title')[0]?.textContent || 'No Title';
+    let link = itemElement.getElementsByTagName('link')[0]?.textContent || 'No Link';
+    let pubDate = itemElement.getElementsByTagName('pubDate')[0]?.textContent || 'N/A';
+    let creator = getElementTextNS(itemElement, DC_NAMESPACE, 'creator');
+
+    // For standard WordPress RSS, we don't have event dates/times in the feed
+    // We'll use the publication date as a fallback and mark these events as needing manual date extraction
+    let eventStart: Date | null = null;
+    let eventEnd: Date | null = null;
+
+    if (pubDate && pubDate !== 'N/A') {
+        try {
+            eventStart = new Date(pubDate);
+            eventEnd = eventStart; // Default to same time for end
+        } catch (e) {
+            console.error(`Error parsing pubDate "${pubDate}":`, e);
+        }
+    }
+
+    // --- Description & Image Extraction ---
+    let rawDescriptionHtml: string | null = null;
+    let cleanDescription: string | null = null;
+    let imageUrl: string | null = null;
+
+    const contentEncodedHtml = getElementTextNS(itemElement, CONTENT_NAMESPACE, 'encoded');
+    const standardDescriptionHtml = itemElement.getElementsByTagName('description')[0]?.textContent;
+
+    if (contentEncodedHtml) {
+        rawDescriptionHtml = contentEncodedHtml;
+    } else if (standardDescriptionHtml) {
+        rawDescriptionHtml = standardDescriptionHtml;
+    }
+
+    if (rawDescriptionHtml) {
+        try {
+            const root = parse(rawDescriptionHtml);
+
+            // Extract image URL if an <img> tag exists
+            const imgElement = root.querySelector('img');
+            if (imgElement) {
+                imageUrl = imgElement.getAttribute('src') || null;
+            }
+
+            cleanDescription = root.textContent?.trim() || null;
+
+            if (cleanDescription) {
+                cleanDescription = cleanDescription.replace(/[\r\n\t]+/g, ' ').replace(/\s{2,}/g, ' ').trim();
+            }
+
+        } catch (e) {
+            console.warn('Error parsing HTML description for image/text:', e);
+            cleanDescription = rawDescriptionHtml;
+        }
+    }
+
+    // Append the description with link for details
+    let description = cleanDescription + '<br /><a href="'+link+'">For more information check out the full page here!</a>';
+
+    // Format title
+    if (source.prefixTitle) { title = source.prefixTitle + title; }
+    if (source.suffixTitle) { title += source.suffixTitle; }
+
+    // Add tags
+    const tags = applyEventTags(source, title, cleanDescription || '');
+    if (isDevelopment) title = tags.length + " " + title;
+
+    return {
+        id: eventStart ? formatTitleAndDateToID(eventStart, title) : null,
+        title: title,
+        org: source.name,
+        start: eventStart,
+        end: eventEnd,
+        url: link,
+        description: description,
+        location: null, // Standard RSS doesn't have location info
+        images: imageUrl ? [imageUrl] : [],
+        tags: tags,
+        extendedProps: {
+            category: null, // Standard RSS doesn't have category info
+            creator: creator,
+            needsDateExtraction: true // Flag to indicate this event needs proper date/time extraction
+        }
+    };
+}
+
+async function enhanceEventWithPageData(event: any) {
+    try {
+        console.log(`Enhancing event data for: ${event.title}`);
+        const response = await fetch(event.url, { headers: serverFetchHeaders });
+        if (!response.ok) {
+            console.warn(`Failed to fetch event page: ${event.url}`);
+            return event;
+        }
+
+        const html = await response.text();
+        const root = parse(html);
+
+        // Look for date/time patterns in the HTML
+        const dateTimeInfo = extractDateTimeFromHTML(html, root);
+
+        if (dateTimeInfo.start) {
+            event.start = dateTimeInfo.start;
+            event.end = dateTimeInfo.end || dateTimeInfo.start;
+            // Update ID with proper date
+            event.id = formatTitleAndDateToID(dateTimeInfo.start, event.title);
+        }
+
+        // Extract location information
+        const location = extractLocationFromHTML(root);
+        if (location) {
+            event.location = location;
+        }
+
+        // Remove the needsDateExtraction flag since we've processed it
+        delete event.extendedProps.needsDateExtraction;
+
+        return event;
+    } catch (error) {
+        console.error(`Error enhancing event ${event.title}:`, error);
+        return event;
+    }
+}
+
+function extractDateTimeFromHTML(html: string, root: any) {
+    // Look for Marx Cafe actual HTML format: <strong>Start Date:<span>2025/09/19 10:00 pm</span></strong>
+    const startDateRegex = /<strong>Start Date:<span>(\d{4})\/(\d{2})\/(\d{2})\s+(\d{1,2}):(\d{2})\s*(am|pm)<\/span><\/strong>/i;
+    const endDateRegex = /<strong>End Date:<span>(\d{4})\/(\d{2})\/(\d{2})\s+(\d{1,2}):(\d{2})\s*(am|pm)<\/span><\/strong>/i;
+
+    let eventDate = null;
+    let startTime = null;
+    let endTime = null;
+
+    // Extract start date and time
+    const startMatch = html.match(startDateRegex);
+    if (startMatch) {
+        console.log('Start date match found:', startMatch[0]);
+        const [, year, month, day, hour, minute, period] = startMatch;
+        let hourNum = parseInt(hour);
+        if (period.toLowerCase() === 'pm' && hourNum !== 12) hourNum += 12;
+        if (period.toLowerCase() === 'am' && hourNum === 12) hourNum = 0;
+
+        startTime = new Date(parseInt(year), parseInt(month) - 1, parseInt(day), hourNum, parseInt(minute));
+        console.log('Parsed start time:', startTime);
+    }
+
+    // Extract end date and time
+    const endMatch = html.match(endDateRegex);
+    if (endMatch) {
+        console.log('End date match found:', endMatch[0]);
+        const [, year, month, day, hour, minute, period] = endMatch;
+        let hourNum = parseInt(hour);
+        if (period.toLowerCase() === 'pm' && hourNum !== 12) hourNum += 12;
+        if (period.toLowerCase() === 'am' && hourNum === 12) hourNum = 0;
+
+        endTime = new Date(parseInt(year), parseInt(month) - 1, parseInt(day), hourNum, parseInt(minute));
+        console.log('Parsed end time:', endTime);
+    }
+
+    if (!startMatch && !endMatch) {
+        console.log('No Marx Cafe date format found');
+    }
+
+    return {
+        start: startTime,
+        end: endTime
+    };
+}
+
+function extractLocationFromHTML(root: any) {
+    // Look for Marx Cafe address pattern
+    const text = root.textContent || '';
+    const addressMatch = text.match(/3203\s+MT\.?\s*PLEASANT\s+ST\s+NW[^,]*,?\s*WASHINGTON\s+DC\s+\d{5}/i);
+    if (addressMatch) {
+        return 'Marx Cafe, ' + addressMatch[0];
+    }
+    return 'Marx Cafe, 3203 MT. Pleasant St NW, Washington DC';
 }

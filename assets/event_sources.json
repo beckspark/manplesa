@@ -264,6 +264,7 @@
         "name": "Mount Pleasant Main Street (District Bridges)",
         "prefixTitle": "🌉 ",
         "suffixTitle": " :mtp main st:",
+        "isMEC": true,
         "filters": [
                 [["nonprofit", "outreach"], "Ward 1", ["title", "description"]],
                 [["nonprofit", "outreach"], "(mt|mount|mnt)\\.? pleasant", ["title", "description"]]
@@ -275,8 +276,28 @@
         "name": "All Souls Unitarian Church",
         "prefixTitle": "🙏 ",
         "suffixTitle": " :all souls:",
+        "isMEC": true,
         "filters": [
             [["community", "religion"]]
+        ]
+        },
+        {
+        "url": "https://marxcafemtp.com/event/feed/",
+        "city": "Washington, D.C.",
+        "name": "Marx Cafe",
+        "prefixTitle": "🍺☭🎵 ",
+        "suffixTitle": " :marx cafe:",
+        "isMEC": false,
+        "filters": [
+            [["commercial", "music"], "jazz", ["title", "description"]],
+            [["commercial", "music"], "cumbia", ["title", "description"]],
+            [["commercial", "music"], "band", ["title", "description"]],
+            [["commercial", "music"], "quartet", ["title", "description"]],
+            [["commercial", "music"], "district", ["title", "description"]],
+            [["commercial", "music", "festival"], "fest", ["title", "description"]],
+            [["commercial", "music", "performance"], "party", ["title", "description"]],
+            [["commercial", "music", "performance"], "show", ["title", "description"]],
+            [["commercial", "food", "music"]]
         ]
         }
     ]

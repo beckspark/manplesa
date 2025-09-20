@@ -151,6 +151,17 @@ calendarOptions.value = {
   plugins: [dayGridPlugin, timeGridPlugin, listPlugin],
   initialView: getWindowWidth() <= 600 ? 'listMonth' : 'dayGridMonth',
   timeZone: 'America/New_York',
+  // Force time formatting to respect timezone in all views, especially listMonth
+  eventTimeFormat: {
+    hour: 'numeric',
+    minute: '2-digit',
+    meridiem: 'short'
+  },
+  // List view specific formatting to ensure timezone consistency
+  listDayFormat: { month: 'long', day: 'numeric', year: 'numeric' },
+  listDaySideFormat: { month: 'short', day: 'numeric' },
+  // Hide time column in list view since we include time in event content
+  displayEventTime: false,
   customButtons: {
     less: {
       text: 'less',
@@ -214,7 +225,16 @@ calendarOptions.value = {
       contentHtml = `<div class="fc-daygrid-event-dot" style="display: inline-block; vertical-align: middle; margin-right: 4px; position: relative; top: -1px;"></div><span class="fc-event-time" style="margin-right: 0px;">${startTime}</span> <span class="fc-event-title">${title}</span>`;
     }
     else {
-      contentHtml = `<a href="${arg.event.url}" class="fc-event-link" style="text-decoration: none; color: inherit;"><span class="fc-event-title">${title}</span></a>`;
+      // For listMonth view, we need to override FullCalendar's default time display since it doesn't respect timezone setting
+      // This fixes the mobile timezone issue where events showed 6 hours earlier
+      let endTime = '';
+      if (arg.event.end) {
+        let endDateTime = DateTime.fromJSDate(arg.event.end, { zone: 'America/New_York' });
+        endTime = endDateTime.toFormat('h:mma').toLowerCase().replace(/^0/, '').replace(':00', '').replace('m','');
+      }
+      // Include time in the title for list view since FullCalendar's time column is broken
+      let timeDisplay = endTime ? `${startTime} - ${endTime}` : startTime;
+      contentHtml = `<a href="${arg.event.url}" class="fc-event-link" style="text-decoration: none; color: inherit;"><span style="font-weight: bold; margin-right: 8px;">${timeDisplay}</span><span class="fc-event-title">${title}</span></a>`;
     }
     return { html: contentHtml };
   },

@@ -206,8 +206,14 @@ function convertSchemaDotOrgEventToFullCalendarEvent(item, source) {
 		tags: tags,
 		extendedProps: {
 			description: item.description || null,
-			image: item.image,
-			location: {
+			// Normalize images to always be an array for consistency with other event sources
+			images: item.image ? [item.image] : [],
+			// Normalize location to be a simple string for consistency
+			location: item.location?.name || 'Location not specified',
+			// Include org name for consistency with other event sources
+			org: source.name,
+			// Keep the full location data for advanced use cases
+			locationData: {
 				geoJSON: geoJSON,
 				eventVenue: {
 					name: item.location?.name || null,
@@ -232,5 +238,14 @@ function convertEventbriteAPIEventToFullCalendarEvent(item, sourceName) {
 		start: new Date(item.start.utc),
 		end: new Date(item.end.utc),
 		url: item.url,
+		extendedProps: {
+			description: item.description?.text || null,
+			// Normalize to empty images array for consistency
+			images: [],
+			// Normalize location for consistency
+			location: 'Location not specified',
+			// Include org name for consistency with other event sources
+			org: sourceName,
+		}
 	};
 };

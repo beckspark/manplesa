@@ -298,6 +298,23 @@
             [["commercial", "music", "performance"], "show", ["title", "description"]],
             [["commercial", "food", "music"]]
         ]
+        },
+        {
+        "url": "https://dcjazzjam.com/feed/",
+        "city": "Washington, D.C.",
+        "name": "DC Jazz Jam",
+        "prefixTitle": "🎷🎵 ",
+        "suffixTitle": " :dc jazz jam:",
+        "isMEC": false,
+        "filters": [
+            [["community", "music"], "jazz", ["title", "description"]],
+            [["community", "music"], "jam", ["title", "description"]],
+            [["community", "music"], "session", ["title", "description"]],
+            [["community", "music"], "sunday", ["title", "description"]],
+            [["community", "music", "performance"], "tribute", ["title", "description"]],
+            [["community", "music", "performance"], "guest", ["title", "description"]],
+            [["community", "music"]]
+        ]
         }
     ]
 }

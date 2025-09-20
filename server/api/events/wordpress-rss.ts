@@ -100,7 +100,7 @@ async function fetchWordpressRssEvents() {
                         const event = convertStandardRssEventToFullCalendarEvent(itemElement, source, 'America/New_York');
                         // If event needs date extraction, scrape the individual page
                         if (event.extendedProps?.needsDateExtraction && event.url) {
-                            return await enhanceEventWithPageData(event);
+                            return await enhanceEventWithPageData(event, source);
                         }
                         return event;
                     }
@@ -333,6 +333,18 @@ function convertStandardRssEventToFullCalendarEvent(itemElement: Element, source
     // Append the description with link for details
     let description = cleanDescription + '<br /><a href="'+link+'">For more information check out the full page here!</a>';
 
+    // Extract date from DC Jazz Jam titles before cleaning
+    let extractedDate = null;
+    if (source.name === 'DC Jazz Jam') {
+        // Extract date before cleaning title
+        const dcJazzDateTime = extractDCJazzJamDateTime(title, cleanDescription || '');
+        if (dcJazzDateTime.start) {
+            extractedDate = dcJazzDateTime;
+        }
+        // Remove patterns like "Sunday 9/21/25: " from the beginning
+        title = title.replace(/^(Sunday|Monday|Tuesday|Wednesday|Thursday|Friday|Saturday)\s+\d{1,2}\/\d{1,2}\/\d{2,4}:\s*/i, '');
+    }
+
     // Format title
     if (source.prefixTitle) { title = source.prefixTitle + title; }
     if (source.suffixTitle) { title += source.suffixTitle; }
@@ -341,12 +353,16 @@ function convertStandardRssEventToFullCalendarEvent(itemElement: Element, source
     const tags = applyEventTags(source, title, cleanDescription || '');
     if (isDevelopment) title = tags.length + " " + title;
 
+    // Use extracted dates if available (DC Jazz Jam), otherwise use publication dates
+    const finalStart = extractedDate?.start || eventStart;
+    const finalEnd = extractedDate?.end || eventEnd;
+
     return {
-        id: eventStart ? formatTitleAndDateToID(eventStart, title) : null,
+        id: finalStart ? formatTitleAndDateToID(finalStart, title) : null,
         title: title,
         org: source.name,
-        start: eventStart,
-        end: eventEnd,
+        start: finalStart,
+        end: finalEnd,
         url: link,
         description: description,
         location: null, // Standard RSS doesn't have location info
@@ -355,12 +371,12 @@ function convertStandardRssEventToFullCalendarEvent(itemElement: Element, source
         extendedProps: {
             category: null, // Standard RSS doesn't have category info
             creator: creator,
-            needsDateExtraction: true // Flag to indicate this event needs proper date/time extraction
+            needsDateExtraction: !extractedDate // Only needs enhancement if we didn't extract date
         }
     };
 }
 
-async function enhanceEventWithPageData(event: any) {
+async function enhanceEventWithPageData(event: any, source: any) {
     try {
         console.log(`Enhancing event data for: ${event.title}`);
         const response = await fetch(event.url, { headers: serverFetchHeaders });
@@ -373,7 +389,7 @@ async function enhanceEventWithPageData(event: any) {
         const root = parse(html);
 
         // Look for date/time patterns in the HTML
-        const dateTimeInfo = extractDateTimeFromHTML(html, root);
+        const dateTimeInfo = extractDateTimeFromHTML(html, root, source, event);
 
         if (dateTimeInfo.start) {
             event.start = dateTimeInfo.start;
@@ -382,8 +398,8 @@ async function enhanceEventWithPageData(event: any) {
             event.id = formatTitleAndDateToID(dateTimeInfo.start, event.title);
         }
 
-        // Extract location information
-        const location = extractLocationFromHTML(root);
+        // Extract location information based on source
+        const location = extractLocationFromHTML(root, source);
         if (location) {
             event.location = location;
         }
@@ -404,7 +420,15 @@ async function enhanceEventWithPageData(event: any) {
     }
 }
 
-function extractDateTimeFromHTML(html: string, root: any) {
+function extractDateTimeFromHTML(html: string, root: any, source?: any, event?: any) {
+    // Handle DC Jazz Jam events - extract date from title and description
+    if (source?.name === 'DC Jazz Jam' && event?.title) {
+        const dcJazzDateTime = extractDCJazzJamDateTime(event.title, event.description);
+        if (dcJazzDateTime.start) {
+            return dcJazzDateTime;
+        }
+    }
+
     // Look for Marx Cafe actual HTML format: <strong>Start Date:<span>2025/09/19 10:00 pm</span></strong>
     const startDateRegex = /<strong>Start Date:<span>(\d{4})\/(\d{2})\/(\d{2})\s+(\d{1,2}):(\d{2})\s*(am|pm)<\/span><\/strong>/i;
     const endDateRegex = /<strong>End Date:<span>(\d{4})\/(\d{2})\/(\d{2})\s+(\d{1,2}):(\d{2})\s*(am|pm)<\/span><\/strong>/i;
@@ -480,13 +504,120 @@ function extractDateTimeFromHTML(html: string, root: any) {
     };
 }
 
-function extractLocationFromHTML(root: any) {
-    // Look for Marx Cafe address pattern
+function extractLocationFromHTML(root: any, source?: any) {
     const text = root.textContent || '';
-    const addressMatch = text.match(/3203\s+MT\.?\s*PLEASANT\s+ST\s+NW[^,]*,?\s*WASHINGTON\s+DC\s+\d{5}/i);
-    if (addressMatch) {
-        return 'Marx Cafe, ' + addressMatch[0];
+
+    // Handle DC Jazz Jam events (they happen at Haydee's)
+    if (source?.name === 'DC Jazz Jam') {
+        // Look for Haydee's address in the content
+        const haydeeMatch = text.match(/haydee'?s[^.]*3102\s+mount\s+pleasant\s+street\s+nw/i);
+        if (haydeeMatch) {
+            return "Haydee's, 3102 Mount Pleasant Street NW, Washington DC";
+        }
+        // Default for DC Jazz Jam
+        return "Haydee's, 3102 Mount Pleasant Street NW, Washington DC";
+    }
+
+    // Handle Marx Cafe events
+    const marxMatch = text.match(/3203\s+MT\.?\s*PLEASANT\s+ST\s+NW[^,]*,?\s*WASHINGTON\s+DC\s+\d{5}/i);
+    if (marxMatch) {
+        return 'Marx Cafe, ' + marxMatch[0];
     }
     return 'Marx Cafe, 3203 MT. Pleasant St NW, Washington DC';
+}
+
+function extractDCJazzJamDateTime(title: string, description?: string) {
+    // Extract date from title pattern: "Sunday 9/21/25: [event details]"
+    const dateMatch = title.match(/(\d{1,2})\/(\d{1,2})\/(\d{2,4})/);
+
+    if (!dateMatch) {
+        return { start: null, end: null };
+    }
+
+    const [, month, day, year] = dateMatch;
+    // Convert 2-digit year to 4-digit (25 -> 2025)
+    const fullYear = year.length === 2 ? parseInt('20' + year) : parseInt(year);
+
+    // Try to extract time from both title and description
+    const textToSearch = (title + ' ' + (description || '')).toLowerCase();
+
+    // Try to extract time from title/description - look for patterns like "6:30-9:00pm", "7:00 PM", etc.
+    let startHour = 18;  // Default 6:30 PM
+    let startMinute = 30;
+    let endHour = 21;    // Default 9:00 PM
+    let endMinute = 0;
+
+    // Look for time ranges like "6:30-9:00pm" or "7:00-10:00 PM"
+    const timeRangeMatch = textToSearch.match(/(\d{1,2}):(\d{2})\s*-\s*(\d{1,2}):(\d{2})\s*(pm|am)?/i);
+    if (timeRangeMatch) {
+        const [, startH, startM, endH, endM, period] = timeRangeMatch;
+        startHour = parseInt(startH);
+        startMinute = parseInt(startM);
+        endHour = parseInt(endH);
+        endMinute = parseInt(endM);
+
+        // Handle AM/PM conversion
+        if (period && period.toLowerCase() === 'pm') {
+            if (startHour !== 12) startHour += 12;
+            if (endHour !== 12) endHour += 12;
+        } else if (period && period.toLowerCase() === 'am') {
+            if (startHour === 12) startHour = 0;
+            if (endHour === 12) endHour = 0;
+        }
+    } else {
+        // Look for single time like "6:30pm" and assume 2.5 hour duration
+        const singleTimeMatch = textToSearch.match(/(\d{1,2}):(\d{2})\s*(pm|am)/i);
+        if (singleTimeMatch) {
+            const [, hour, minute, period] = singleTimeMatch;
+            startHour = parseInt(hour);
+            startMinute = parseInt(minute);
+
+            if (period.toLowerCase() === 'pm' && startHour !== 12) {
+                startHour += 12;
+            } else if (period.toLowerCase() === 'am' && startHour === 12) {
+                startHour = 0;
+            }
+
+            // Default 2.5 hour duration
+            endHour = startHour + 2;
+            endMinute = startMinute + 30;
+            if (endMinute >= 60) {
+                endHour++;
+                endMinute -= 60;
+            }
+        }
+    }
+
+    const startDateTime = DateTime.fromObject(
+        {
+            year: fullYear,
+            month: parseInt(month),
+            day: parseInt(day),
+            hour: startHour,
+            minute: startMinute
+        },
+        { zone: 'America/New_York' }
+    );
+
+    const endDateTime = DateTime.fromObject(
+        {
+            year: fullYear,
+            month: parseInt(month),
+            day: parseInt(day),
+            hour: endHour,
+            minute: endMinute
+        },
+        { zone: 'America/New_York' }
+    );
+
+    if (startDateTime.isValid && endDateTime.isValid) {
+        console.log(`DC Jazz Jam: Extracted date ${month}/${day}/${fullYear} ${startHour}:${startMinute.toString().padStart(2,'0')}-${endHour}:${endMinute.toString().padStart(2,'0')} EST`);
+        return {
+            start: startDateTime.toJSDate(),
+            end: endDateTime.toJSDate()
+        };
+    }
+
+    return { start: null, end: null };
 }
 

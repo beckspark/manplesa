@@ -150,18 +150,6 @@ const { open: openEventModal, close: closeEventModal } = useModal({
 calendarOptions.value = {
   plugins: [dayGridPlugin, timeGridPlugin, listPlugin],
   initialView: getWindowWidth() <= 600 ? 'listMonth' : 'dayGridMonth',
-  timeZone: 'America/New_York',
-  // Force time formatting to respect timezone in all views, especially listMonth
-  eventTimeFormat: {
-    hour: 'numeric',
-    minute: '2-digit',
-    meridiem: 'short'
-  },
-  // List view specific formatting to ensure timezone consistency
-  listDayFormat: { month: 'long', day: 'numeric', year: 'numeric' },
-  listDaySideFormat: { month: 'short', day: 'numeric' },
-  // Hide time column in list view since we include time in event content
-  displayEventTime: false,
   customButtons: {
     less: {
       text: 'less',
@@ -212,8 +200,8 @@ calendarOptions.value = {
     // Format the start time and title as desired
     let startTime = '';
     if (arg.event.start) {
-      // Use Luxon to format the time with explicit timezone to ensure consistency across mobile/desktop
-      let startDateTime = DateTime.fromJSDate(arg.event.start, { zone: 'America/New_York' });
+      // Use Luxon to format the time
+      let startDateTime = DateTime.fromJSDate(arg.event.start);
       // Format the time to show "7p" for 19:00 and "5:30a" for 05:30
       startTime = startDateTime.toFormat('h:mma').toLowerCase(); // Converts to "7:00pm" or "5:30am"
       // Remove the leading "0" for times like "07:00pm", remove ":00" for whole hours, and remove "m" to return to it's previous format
@@ -225,16 +213,7 @@ calendarOptions.value = {
       contentHtml = `<div class="fc-daygrid-event-dot" style="display: inline-block; vertical-align: middle; margin-right: 4px; position: relative; top: -1px;"></div><span class="fc-event-time" style="margin-right: 0px;">${startTime}</span> <span class="fc-event-title">${title}</span>`;
     }
     else {
-      // For listMonth view, we need to override FullCalendar's default time display since it doesn't respect timezone setting
-      // This fixes the mobile timezone issue where events showed 6 hours earlier
-      let endTime = '';
-      if (arg.event.end) {
-        let endDateTime = DateTime.fromJSDate(arg.event.end, { zone: 'America/New_York' });
-        endTime = endDateTime.toFormat('h:mma').toLowerCase().replace(/^0/, '').replace(':00', '').replace('m','');
-      }
-      // Include time in the title for list view since FullCalendar's time column is broken
-      let timeDisplay = endTime ? `${startTime} - ${endTime}` : startTime;
-      contentHtml = `<a href="${arg.event.url}" class="fc-event-link" style="text-decoration: none; color: inherit;"><span style="font-weight: bold; margin-right: 8px;">${timeDisplay}</span><span class="fc-event-title">${title}</span></a>`;
+      contentHtml = `<a href="${arg.event.url}" class="fc-event-link" style="text-decoration: none; color: inherit;"><span class="fc-event-title">${title}</span></a>`;
     }
     return { html: contentHtml };
   },
@@ -246,8 +225,7 @@ const updateCalendarHeight = () => {
   calendarOptions.value = {
     ...calendarOptions.value,
     weekNumbers: getWindowWidth() < 350 ? false : true,
-    dayMaxEventRows: updateDayMaxEventRows(),
-    timeZone: 'America/New_York'
+    dayMaxEventRows: updateDayMaxEventRows()
   };
 };
 

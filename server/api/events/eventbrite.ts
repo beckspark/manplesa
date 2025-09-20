@@ -194,7 +194,7 @@ function convertSchemaDotOrgEventToFullCalendarEvent(item, source) {
 	} : null;
 
 	const title = `${item.name} @ ${source.name}`;
-	const description = item.description || '';
+	const description = item.description + '<br /><a href="' + item.url + '">For more information and to register check out the full page here!</a>' || '';
 	const tags = applyEventTags(source, title, description);
 
 	return {
@@ -205,7 +205,7 @@ function convertSchemaDotOrgEventToFullCalendarEvent(item, source) {
 		url: item.url,
 		tags: tags,
 		extendedProps: {
-			description: item.description || null,
+			description: description || null,
 			// Normalize images to always be an array for consistency with other event sources
 			images: item.image ? [item.image] : [],
 			// Normalize location to be a simple string for consistency

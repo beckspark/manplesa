@@ -104,3 +104,55 @@ export function applyEventTags(source: any, title: string, description: string, 
 
 	return tags;
 }
+
+// Image extraction utility for scraped web pages
+export function extractBestImageFromHTML(root: any): string | null {
+    // Find all images in the page
+    const images = root.querySelectorAll('img');
+
+    let bestImage = null;
+    let bestScore = 0;
+
+    for (const img of images) {
+        const src = img.getAttribute('src');
+        if (!src) continue;
+
+        // Skip logos, icons, and common UI images
+        if (src.match(/logo|icon|avatar|header|footer|navigation|menu/i)) continue;
+
+        // Skip very small images
+        const width = parseInt(img.getAttribute('width')) || 0;
+        const height = parseInt(img.getAttribute('height')) || 0;
+        if (width > 0 && height > 0 && (width < 100 || height < 100)) continue;
+
+        // Prefer images from wp-content/uploads (actual content images)
+        let score = src.includes('wp-content/uploads') ? 100 : 50;
+
+        // Prefer larger images based on filename dimensions
+        const dimensionMatch = src.match(/-(\d+)x(\d+)\./);
+        if (dimensionMatch) {
+            const imgWidth = parseInt(dimensionMatch[1]);
+            const imgHeight = parseInt(dimensionMatch[2]);
+            score += Math.min(imgWidth, 1000) / 10; // Cap bonus at 100
+        }
+
+        // Prefer recent images (higher score for images from current year)
+        if (src.includes('/2025/')) {
+            score += 50;
+        } else if (src.includes('/2024/')) {
+            score += 20;
+        }
+
+        // Prefer images that look like event content
+        if (src.match(/instagram|event|show|concert|photo/i)) {
+            score += 30;
+        }
+
+        if (score > bestScore) {
+            bestScore = score;
+            bestImage = src;
+        }
+    }
+
+    return bestImage;
+}

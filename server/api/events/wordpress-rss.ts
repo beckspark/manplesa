@@ -1,5 +1,5 @@
 import eventSourcesJSON from '@/assets/event_sources.json';
-import { logTimeElapsedSince, serverCacheMaxAgeSeconds, serverStaleWhileInvalidateSeconds, serverFetchHeaders, applyEventTags } from '@/utils/util';
+import { logTimeElapsedSince, serverCacheMaxAgeSeconds, serverStaleWhileInvalidateSeconds, serverFetchHeaders, applyEventTags, extractBestImageFromHTML } from '@/utils/util';
 import { DOMParser } from 'xmldom';
 import { parse } from 'node-html-parser';
 import { DateTime } from 'luxon';
@@ -13,8 +13,8 @@ const DC_NAMESPACE = 'http://purl.org/dc/elements/1.1/';
 
 export default defineCachedEventHandler(async (event) => {
     const startTime = new Date();
-    const body = await fetchWordpressMECRssEvents();
-    logTimeElapsedSince(startTime, 'Wordpress MEC RSS: events fetched.');
+    const body = await fetchWordpressRssEvents();
+    logTimeElapsedSince(startTime, 'WordPress RSS: events fetched.');
     return {
         body
     }
@@ -53,14 +53,14 @@ function formatTitleAndDateToID(inputDate: any, title: string) {
 	return `${year}${month}${day}${hours}${minutes}${titlePrefix}`;
 }
 
-async function fetchWordpressMECRssEvents() {
-    console.log('=== Fetching wordpress MEC RSS events ===');
-    console.log('Sources to fetch:', eventSourcesJSON.wordpressMECRss.length);
-    let wordpressMECRssSources: EventNormalSource[] | null = await useStorage().getItem('wordpressMECRssSources');
+async function fetchWordpressRssEvents() {
+    console.log('=== Fetching WordPress RSS events ===');
+    console.log('Sources to fetch:', eventSourcesJSON.wordpressRss.length);
+    let wordpressRssSources: EventNormalSource[] | null = await useStorage().getItem('wordpressRssSources');
 
     try {
-        wordpressMECRssSources = await Promise.all(
-            eventSourcesJSON.wordpressMECRss.map(async (source) => {
+        wordpressRssSources = await Promise.all(
+            eventSourcesJSON.wordpressRss.map(async (source) => {
                 try {
                     console.log(`Fetching from ${source.name}: ${source.url}`);
                     const response = await fetch(source.url, { headers: serverFetchHeaders });
@@ -122,15 +122,15 @@ async function fetchWordpressMECRssEvents() {
                 }
             })
         );
-        await useStorage().setItem('wordpressMECRssSources', wordpressMECRssSources);
-        console.log(`Final result: ${wordpressMECRssSources.length} sources with total events:`,
-                   wordpressMECRssSources.map(s => `${s.name}: ${s.events.length}`));
+        await useStorage().setItem('wordpressRssSources', wordpressRssSources);
+        console.log(`Final result: ${wordpressRssSources.length} sources with total events:`,
+                   wordpressRssSources.map(s => `${s.name}: ${s.events.length}`));
     } catch (error) {
-        console.error('Error fetching wordpress MEC RSS events:', error);
+        console.error('Error fetching WordPress RSS events:', error);
 
         return [];
     }
-    return wordpressMECRssSources;
+    return wordpressRssSources;
 }
 
 function getElementTextNS(element: Element, namespaceURI: string | null, tagName: string): string | null {
@@ -279,8 +279,16 @@ function convertStandardRssEventToFullCalendarEvent(itemElement: Element, source
 
     if (pubDate && pubDate !== 'N/A') {
         try {
-            eventStart = new Date(pubDate);
-            eventEnd = eventStart; // Default to same time for end
+            // Parse pubDate and ensure it's in EST timezone
+            const pubDateTime = DateTime.fromRFC2822(pubDate, { zone: 'America/New_York' });
+            if (pubDateTime.isValid) {
+                eventStart = pubDateTime.toJSDate();
+                eventEnd = eventStart; // Default to same time for end
+            } else {
+                // Fallback to native Date parsing if RFC2822 fails
+                eventStart = new Date(pubDate);
+                eventEnd = eventStart;
+            }
         } catch (e) {
             console.error(`Error parsing pubDate "${pubDate}":`, e);
         }
@@ -380,6 +388,12 @@ async function enhanceEventWithPageData(event: any) {
             event.location = location;
         }
 
+        // Extract the best image from the page content
+        const bestImage = extractBestImageFromHTML(root);
+        if (bestImage) {
+            event.images = [bestImage];
+        }
+
         // Remove the needsDateExtraction flag since we've processed it
         delete event.extendedProps.needsDateExtraction;
 
@@ -395,7 +409,6 @@ function extractDateTimeFromHTML(html: string, root: any) {
     const startDateRegex = /<strong>Start Date:<span>(\d{4})\/(\d{2})\/(\d{2})\s+(\d{1,2}):(\d{2})\s*(am|pm)<\/span><\/strong>/i;
     const endDateRegex = /<strong>End Date:<span>(\d{4})\/(\d{2})\/(\d{2})\s+(\d{1,2}):(\d{2})\s*(am|pm)<\/span><\/strong>/i;
 
-    let eventDate = null;
     let startTime = null;
     let endTime = null;
 
@@ -408,8 +421,24 @@ function extractDateTimeFromHTML(html: string, root: any) {
         if (period.toLowerCase() === 'pm' && hourNum !== 12) hourNum += 12;
         if (period.toLowerCase() === 'am' && hourNum === 12) hourNum = 0;
 
-        startTime = new Date(parseInt(year), parseInt(month) - 1, parseInt(day), hourNum, parseInt(minute));
-        console.log('Parsed start time:', startTime);
+        // Create DateTime in EST timezone then convert to JavaScript Date
+        const startDateTimeLuxon = DateTime.fromObject(
+            {
+                year: parseInt(year),
+                month: parseInt(month),
+                day: parseInt(day),
+                hour: hourNum,
+                minute: parseInt(minute)
+            },
+            { zone: 'America/New_York' }
+        );
+
+        if (startDateTimeLuxon.isValid) {
+            startTime = startDateTimeLuxon.toJSDate();
+            console.log('Parsed start time (EST):', startTime);
+        } else {
+            console.error('Invalid start date/time:', startDateTimeLuxon.invalidExplanation);
+        }
     }
 
     // Extract end date and time
@@ -421,8 +450,24 @@ function extractDateTimeFromHTML(html: string, root: any) {
         if (period.toLowerCase() === 'pm' && hourNum !== 12) hourNum += 12;
         if (period.toLowerCase() === 'am' && hourNum === 12) hourNum = 0;
 
-        endTime = new Date(parseInt(year), parseInt(month) - 1, parseInt(day), hourNum, parseInt(minute));
-        console.log('Parsed end time:', endTime);
+        // Create DateTime in EST timezone then convert to JavaScript Date
+        const endDateTimeLuxon = DateTime.fromObject(
+            {
+                year: parseInt(year),
+                month: parseInt(month),
+                day: parseInt(day),
+                hour: hourNum,
+                minute: parseInt(minute)
+            },
+            { zone: 'America/New_York' }
+        );
+
+        if (endDateTimeLuxon.isValid) {
+            endTime = endDateTimeLuxon.toJSDate();
+            console.log('Parsed end time (EST):', endTime);
+        } else {
+            console.error('Invalid end date/time:', endDateTimeLuxon.invalidExplanation);
+        }
     }
 
     if (!startMatch && !endMatch) {
@@ -444,3 +489,4 @@ function extractLocationFromHTML(root: any) {
     }
     return 'Marx Cafe, 3203 MT. Pleasant St NW, Washington DC';
 }
+

@@ -64,7 +64,7 @@
             "/api/events/squarespace",
             "/api/events/libnet",
             "/api/events/helpfulvillage",
-            "/api/events/wordpress-mec-rss",
+            "/api/events/wordpress-rss",
             "/api/events/eventbrite"
         ]
     },
@@ -256,7 +256,7 @@
             ]
         }
     ],
-    "wordpressMECRss": [
+    "wordpressRss": [
         {
         "url": "http://districtbridges.org/events/feed",
         "city": "Washington, D.C.",

@@ -77,8 +77,7 @@
                 [["nonprofit", "outreach"], "Planning", ["title", "description"]],
                 [["market"], "market", ["title","description"]],
                 ["unknownType", "This is a tag inserted for code purposes, this tag represents all tags which won't be categorized", "title"]
-            ],
-            "prefixTitle": " :mtp cc:"
+            ]
         }
     ],
     "squarespace": [

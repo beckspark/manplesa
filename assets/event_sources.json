@@ -228,7 +228,6 @@
             "url": "https://www.eventbrite.com/o/bold-fork-books-36931109723",
             "city": "Washington, D.C.",
             "prefixTitle": "📚🍴 ",
-            "suffixTitle": " :bold fork books:",
             "filters": [
                 [["commercial", "books", "food", "community"], "book", ["title", "description"]],
                 [["commercial", "books", "food", "community"], "author", ["title", "description"]],

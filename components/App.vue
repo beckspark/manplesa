@@ -150,6 +150,7 @@ const { open: openEventModal, close: closeEventModal } = useModal({
 calendarOptions.value = {
   plugins: [dayGridPlugin, timeGridPlugin, listPlugin],
   initialView: getWindowWidth() <= 600 ? 'listMonth' : 'dayGridMonth',
+  timeZone: 'America/New_York',
   customButtons: {
     less: {
       text: 'less',
@@ -200,8 +201,8 @@ calendarOptions.value = {
     // Format the start time and title as desired
     let startTime = '';
     if (arg.event.start) {
-      // Use Luxon to format the time
-      let startDateTime = DateTime.fromJSDate(arg.event.start);
+      // Use Luxon to format the time with explicit timezone to ensure consistency across mobile/desktop
+      let startDateTime = DateTime.fromJSDate(arg.event.start, { zone: 'America/New_York' });
       // Format the time to show "7p" for 19:00 and "5:30a" for 05:30
       startTime = startDateTime.toFormat('h:mma').toLowerCase(); // Converts to "7:00pm" or "5:30am"
       // Remove the leading "0" for times like "07:00pm", remove ":00" for whole hours, and remove "m" to return to it's previous format

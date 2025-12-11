@@ -417,14 +417,12 @@ const transformEventSourcesResponse = (eventSources: Ref<Record<string, any>>) =
           <td class="blurb-image"></td>
           <td>
             <div class="blurb-text">
-              Our neighborhood bulletin board for events around Mt. Pleasant, Washington D.C.
+              Welcome to the Mt. Pleasant Community Calendar!
             </div>
             <div class="blurb-sub">
-              <p>Welcome to The Mt. Pleasant Community Calendar. This free and accessible digital bulletin board shares local events and activities based in and around the Mt. Pleasant neighborhood. 
-              Anyone is welcome to submit an event by using the button below or check out our contributing guide for more information about how to submit! Special-interest and identity-group events are encouraged,
-              but please only submit events that are open to the public. This site was built and is maintained by and for the neighbors of Mt. Pleasant.
-              We aim to help neighbors connect with one another and participate in the rich tapestry of hyperlocal organizations, collectives, and small-businesses that make our neighborhood special.
-              For suggestions, questions, or to get involved with the project, contact: <a href="mailto:mtpleasantcommunitycalendar@gmail.com">mtpleasantcommunitycalendar@gmail.com</a> &lt;3</p>
+              <p>
+                This digital bulletin board shares local events and activities based in DC's Mt. Pleasant neighborhood. Everyone is welcome to submit an event by using the button below, but please only submit events that are open to the public. Follow the calendar on instagram! <a href="https://www.instagram.com/mtpleasantcommunitycalendar/">@mtpleasantcommunitycalendar</a> 
+              </p>
                 <p>
                   <a href="https://forms.gle/fsGEFULbUSke29UGA" class="button-link">
                     Submit an Event!
@@ -439,20 +437,13 @@ const transformEventSourcesResponse = (eventSources: Ref<Record<string, any>>) =
     <div style="display: flex; align-items: center; flex-direction: row;">
       <div class="desc" style="padding-bottom: 0;">
         <p>
-          The Mt. Pleasant Community Calendar was built to help all neighbors access and participate in the rich community offerings of Mt. Pleasant.
-          Whether it’s a festival, community meeting, mutual aid opportunity, pop-up, live music, or a we aim to consolidate all of that information here on our site, which will remain a free public resource.
-          The events here are drawn from various organizer listings that contributors (thank you!) have provided. We welcome feedback and collaborations.
+          The Mt. Pleasant Community Calendar was built to help all neighbors access and participate in the rich tapestry of community offerings in Mt. Pleasant. Whether it’s a festival, community meeting, mutual aid opportunity, pop-up, or live music, we aim to gather all of that information here on our site, which will remain a free public resource. The events here are drawn from various organizer listings that contributors (thank you!) have provided. We welcome feedback and collaborations.
         </p>
         <p>
-          To add an event to the calendar, click here!
-          Events added to the calendar should be generally accessible to the public and community-oriented. 
+          For suggestions, questions, or to get involved with the project, contact: <a href="mailto:mtpleasantcommunitycalendar@gmail.com">mtpleasantcommunitycalendar@gmail.com</a> &lt;3
         </p>
         <p>
-          If you or your organization frequently host events, consider creating a public Google Calendar for your events.
-          Once published, request inclusion of your event feed by sending your Google Calendar ID via a new GitHub issue or by emailing us at <a href="mailto:mtpleasantcommunitycalendar@gmail.com">mtpleasantcommunitycalendar@gmail.com</a>!
-        </p>
-        <p>
-          For additional help promoting events, or for suggestions or improvements to the platform, please reach out – we'd love to collaborate!  
+          If you or your organization has an existing calendar, we would love to include your information! Please reach out to us at <a href="mailto:mtpleasantcommunitycalendar@gmail.com">mtpleasantcommunitycalendar@gmail.com</a> and we will set up an automatic upload. For additional help promoting events, or for suggestions or improvements to the platform, please reach out – we'd love to collaborate!
         </p>
       </div>
     </div>

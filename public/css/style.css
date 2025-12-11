@@ -70,7 +70,7 @@ body {
   background-repeat: repeat;
   margin: 0;
   height: 100%;
-  font-family: 'ChicagoFLF', 'Times New Roman', 'Georgia', serif;
+  font-family: system-ui, sans-serif;
   font-size: 12px;
   font-weight: normal;
   color: var(--text-normal);
@@ -335,7 +335,7 @@ div.fc-scrollgrid-sync-inner:not(.fc-daygrid-day-frame) {
 
 .desc {
   /* This causes issues with fc-h-events */
-  font-family: 'OpenDyslexic', serif;
+  font-family: system-ui, sans-serif;
   padding: 18px;
   font-size: min(1em);
   color: var(--text-normal);
@@ -464,7 +464,7 @@ body.no-scroll {
 
 .event-details {
   color: var(--text-normal);
-  font-family:ChicagoFLF,Times New Roman,Georgia,serif;
+  font-family: system-ui, sans-serif;
   font-size:14px;
 }
 

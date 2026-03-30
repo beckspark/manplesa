@@ -142,7 +142,14 @@ function convertlibnetEventToFullCalendarEvent(timeZone: string, e, source) {
 		const tagString = String(tag);
 		return tagString.toLowerCase().replace(/ /g, '_');
 	});
-	const tags = applyEventTags(source, title, description, eventTags);
+    
+    //Adds in the option for a global tag
+	const tags = [
+    ...new Set([
+        ...(source.defaultTags || []),
+        ...applyEventTags(source, title, description, eventTags)
+        ])
+    ];
 
 	if (isDevelopment) title = tags.length + " " + title;
 

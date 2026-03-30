@@ -93,9 +93,6 @@ function toggleTagVisibility(tagName: string) {
       <TagFilterItem v-for="tag in tagsHeader" :key="tag.name" class="tag-group" :label="tag.fullName" :modelValue="getTagVisibility(tag.name)" @update:modelValue="updateTagVisibility(tag.name, $event)">
       </TagFilterItem>
     </div>
-    <span class="event-headers">
-      Event Type
-    </span>
     <div v-for="group in tagsToShow" :key="group[0] || group" class="tag-group">
       <template v-if="Array.isArray(group)">
         <TopicFilterItem class="tag-header" :label="group[0].fullName" @checkAll="setVisibilityForGroup(group.slice(1), true)" @uncheckAll="setVisibilityForGroup(group.slice(1), false)">

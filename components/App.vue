@@ -18,7 +18,8 @@ import { getAllTags } from '@/server/tagsListServe'; //Function that gives all t
 
 const clickedEvent: Ref<EventClickArg | null> = ref(null); // For storing the clickedEvent data
 const calendarRef = ref(null); // Ref for the FullCalendar instance
-const tags = ref(getAllTags()); // Ref for serving a full list of tags found in event_sources.json
+const tags = ref([]);
+// tags will be fetched in onMounted below
 provide('tags', tags); //Serves the tags array globally, allowing it to be accessed in FilterModal.vue
 
 var beforeMOTDDate = (Date.now() < Date.parse('11/02/2024 2:30:00 PM'));//For hiding the MOTD, a better system will be implemented in the future!
@@ -296,18 +297,29 @@ getEventSources();
 if (process.client)
   setTimeout(moveListViewScrollbarToTodayAndColor, 0);
 
-onMounted(() => {
-  window.addEventListener("resize", updateCalendarHeight);
-  moveListViewScrollbarToTodayAndColor();
-  // Expose the calendar instance to the window object for debugging
-  if (calendarRef.value) window.myCalendar = calendarRef.value.getApi();
-  //For the svgGrave rendering
-  async function fetchGrave() {
-    const svgResponse = await fetch('/css/gravestone.svg');
-    svgGrave.value = await svgResponse.text();
+onMounted(async () => {
+  try {
+    const [tagsRes, ...eventResponses] = await Promise.all([
+      fetch('/api/tags'),
+      fetch('/api/events/googleCalendar'),
+      fetch('/api/events/squarespace'),
+      fetch('/api/events/libnet'),
+      fetch('/api/events/helpfulvillage'),
+      fetch('/api/events/wordpress-rss'),
+      fetch('/api/events/eventbrite'),
+    ]);
+
+    tags.value = await tagsRes.json();
+    const data = await Promise.all(eventResponses.map(r => r.json()));
+    events.value = data.flatMap(d => d.body || []);
+  } catch (error) {
+    console.error('Error fetching events:', error);
+  } finally {
+    isLoading.value = false;
   }
-  fetchGrave();
 });
+
+
 onUpdated(() => {
 });
 onUnmounted(() => {

@@ -1,5 +1,6 @@
 {
     "appConfig": {
+        "tagsHidden": ["hidden", "invisible", "internal"],
         "tagsHeader": [
             {"name": "books", "fullName": "Books", "defaultValue": "true"},
             {"name": "community_service_mutual_aid", "fullName": "Community Service / Mutual Aid", "defaultValue": "true"},
@@ -13,7 +14,21 @@
             {"name": "spanish_language", "fullName": "Spanish Language", "defaultValue": "true"},
             {"name": "visual_art_theater", "fullName": "Visual Art & Theater", "defaultValue": "true"}
         ],
+        "tagsToShow":[
+            {"name": "books", "fullName": "Books", "defaultValue": "true"},
+            {"name": "community_service_mutual_aid", "fullName": "Community Service / Mutual Aid", "defaultValue": "true"},
+            {"name": "cooking_food", "fullName": "Cooking / Food", "defaultValue": "true"},
+            {"name": "fitness", "fullName": "Fitness", "defaultValue": "true"},
+            {"name": "family_children", "fullName": "Family / Children", "defaultValue": "true"},
+            {"name": "music", "fullName": "Music", "defaultValue": "true"},
+            {"name": "open_mic_comedy", "fullName": "Open Mic / Comedy", "defaultValue": "true"},
+            {"name": "politics_activism", "fullName": "Politics / Activism", "defaultValue": "true"},
+            {"name": "religion", "fullName": "Religion", "defaultValue": "true"},
+            {"name": "spanish_language", "fullName": "Spanish Language", "defaultValue": "true"},
+            {"name": "visual_art_theater", "fullName": "Visual Art & Theater", "defaultValue": "true"}
         ],
+        
+        
         "eventApiToGrab": [
             "/api/events/googleCalendar",
             "/api/events/squarespace",
@@ -41,14 +56,16 @@
             "url": "https://anc1d.org/meetingcalendar?format=json",
             "prefixTitle": "🏛️ ",
             "suffixTitle": " :anc1d:",
-            "defaultTags": ["politics_activism", "community_service_mutual_aid"]
+            "defaultTags": ["politics_activism", "community_service_mutual_aid"],
+            "filters": []
         },
         {
             "name": "FreeDC Project",
             "url": "https://freedcproject.org/event-list?format=json",
             "prefixTitle": "🌸📢 ",
             "suffixTitle": " :freedc:",
-            "defaultTags": ["politics_activism", "community_service_mutual_aid"]
+            "defaultTags": ["politics_activism", "community_service_mutual_aid"],
+            "filters": []
         }
     ],
     "libnet": [

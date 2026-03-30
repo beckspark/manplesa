@@ -17,6 +17,9 @@ function extractSourceNames(urls: string[]): string[] {
 
 export function getAllTags(): Tag[] {
   const tagsSet = new Set<string>();
+  
+  console.log('appConfig:', JSON.stringify(eventSourcesJSON.appConfig));
+  console.log('tagsToShow:', JSON.stringify(eventSourcesJSON.appConfig.tagsToShow));
 
   // Add all tags from tagsToShow (flatten all groups)
   eventSourcesJSON.appConfig.tagsToShow.forEach(group => {

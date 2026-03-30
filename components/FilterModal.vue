@@ -43,20 +43,13 @@ const isDevelopment = process.env.NODE_ENV === 'development';
 // Accessing tags from the imported JSON
 const tagsHeader = ref(eventSourcesJSON.appConfig.tagsHeader);
 const tagsHidden = ref(eventSourcesJSON.appConfig.tagsHidden);
-const tagsToShow = ref(eventSourcesJSON.appConfig.tagsToShow);
+const tagsToShow = computed(() => Array.isArray(tags.value) ? tags.value.filter(tag => !tag.isHidden) : []);
 
 // Computed property to flatten tagsToShow into a 1D array of strings, for the purpose of debugging to make sure there's no tags missing
 const tagsAllShown = computed(() => {
-  let flattened = [];
-  for (let i = 0; i < tagsToShow.value.length; i++) {
-    if (tagsToShow.value[i].length === 1) {
-      flattened.push(tagsToShow.value[i][0].map(tag => tag.name));
-    } else {
-      flattened.push(...tagsToShow.value[i].slice(1).map(tag => tag.name)); // Skip the first element (label) and add rest
-    }
-  }
-  flattened.push(...tagsHeader.value.map(tag => tag.name)); //Add the tagsHeader values to the array, ensuring that they're not left out from the list of ALL TAGS SHOWN
-  flattened.push(...tagsHidden.value); //Add the tagsHidden values to the array, ensuring that they're not left out from the list of ALL TAGS SHOWN
+  const flattened = tagsToShow.value.map(tag => tag.name);
+  flattened.push(...tagsHeader.value.map(tag => tag.name));
+  flattened.push(...tagsHidden.value);
   return flattened;
 });
 

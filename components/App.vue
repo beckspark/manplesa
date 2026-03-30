@@ -14,12 +14,11 @@ import { clientCacheMaxAgeSeconds, clientStaleWhileInvalidateSeconds } from '~~/
 import { replaceBadgePlaceholders } from '~~/utils/util';
 import { type CalendarOptions, type EventClickArg, type EventSourceInput } from '@fullcalendar/core/index.js';
 import eventSourcesJSON from '@/assets/event_sources.json';
-import { getAllTags } from '@/server/tagsListServe'; //Function that gives all tags utilized from event_sources.json
+import { getAllTags } from '@/utils/tags';
 
 const clickedEvent: Ref<EventClickArg | null> = ref(null); // For storing the clickedEvent data
 const calendarRef = ref(null); // Ref for the FullCalendar instance
-const tags = ref([]);
-// tags will be fetched in onMounted below
+const tags = ref(getAllTags()); // Ref for serving a full list of tags found in event_sources.json
 provide('tags', tags); //Serves the tags array globally, allowing it to be accessed in FilterModal.vue
 
 var beforeMOTDDate = (Date.now() < Date.parse('11/02/2024 2:30:00 PM'));//For hiding the MOTD, a better system will be implemented in the future!
@@ -284,41 +283,29 @@ async function getEventSources() {
   const clientHeaders = {
     'Cache-Control': `max-age=${clientCacheMaxAgeSeconds}, stale-while-revalidate=${clientStaleWhileInvalidateSeconds}`,
   };
-  // This is to preventing the UI changes from each fetch result to cause more fetches to occur.,
   Promise.allSettled(endpoints.map(async (endpoint) => {
-    const { data } = await useLazyFetch(endpoint, { headers: clientHeaders });
-    return addEventSources(transformEventSourcesResponse(data));
+    const response = await fetch(endpoint, { headers: clientHeaders });
+    const data = await response.json();
+    addEventSources(transformEventSourcesResponse(ref(data)));
   }));
 }
 
-// Multiple re-renders (which may be unrelated to the fetching) cause this to be called multiple times.
-getEventSources();
+
 // A hack to move the scrollbar to today after mounting- it is inconsistent otherwise on mobile.
 if (process.client)
   setTimeout(moveListViewScrollbarToTodayAndColor, 0);
 
-onMounted(async () => {
-  try {
-    const [tagsRes, ...eventResponses] = await Promise.all([
-      fetch('/api/tags'),
-      fetch('/api/events/googleCalendar'),
-      fetch('/api/events/squarespace'),
-      fetch('/api/events/libnet'),
-      fetch('/api/events/helpfulvillage'),
-      fetch('/api/events/wordpress-rss'),
-      fetch('/api/events/eventbrite'),
-    ]);
-
-    tags.value = await tagsRes.json();
-    const data = await Promise.all(eventResponses.map(r => r.json()));
-    events.value = data.flatMap(d => d.body || []);
-  } catch (error) {
-    console.error('Error fetching events:', error);
-  } finally {
-    isLoading.value = false;
+onMounted(() => {
+  getEventSources();  // add this line
+  window.addEventListener("resize", updateCalendarHeight);
+  moveListViewScrollbarToTodayAndColor();
+  if (calendarRef.value) window.myCalendar = calendarRef.value.getApi();
+  async function fetchGrave() {
+    const svgResponse = await fetch('/css/gravestone.svg');
+    svgGrave.value = await svgResponse.text();
   }
+  fetchGrave();
 });
-
 
 onUpdated(() => {
 });
@@ -328,6 +315,7 @@ onUnmounted(() => {
 
 // Updates calendarOptions' eventSources and triggers a re-render of the calendar.
 function addEventSources(newEventSources: EventNormalSource[] | EventGoogleCalendarSource[]) {
+  console.log('addEventSources called, count:', newEventSources?.length);
   // Cut out events without times, but typecheck for types that can have invalid times.
   newEventSources = newEventSources.map(eventSource => {
     // Skip events that can't be invalid.
@@ -398,6 +386,7 @@ function addEventSources(newEventSources: EventNormalSource[] | EventGoogleCalen
 }
 
 const transformEventSourcesResponse = (eventSources: Ref<Record<string, any>>) => {
+  console.log('transformEventSourcesResponse called, body:', eventSources.value?.body?.length);
   const eventsSourcesWithoutProxy = toRaw(eventSources.value.body)
   if (!eventsSourcesWithoutProxy || eventsSourcesWithoutProxy.length < 1) return [];
   const datesAdded = eventsSourcesWithoutProxy.map(eventSource => {
@@ -410,7 +399,7 @@ const transformEventSourcesResponse = (eventSources: Ref<Record<string, any>>) =
           // Convert date strings to Date objects.
           start: new Date(event.start),
           end: new Date(event.end),
-          display: isDisplayingBasedOnTags(event)
+          display: 'list-item'
         }
       })
     }

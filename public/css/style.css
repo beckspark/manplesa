@@ -397,14 +397,13 @@ body.no-scroll {
 .popper-box-wrapper .popper-box-inner .county-header {
   display: flex;
   flex-direction: column;
-  margin-top: 2px;
+  margin-top: 10px;
   font-size: min(2em);
 }
 .popper-box-wrapper .popper-box-inner .city-header {
   vertical-align: middle;
   float: right;
   line-height: 30px;
-  margin-left: 36px;
   font-size: min(0.75em);
 }
 

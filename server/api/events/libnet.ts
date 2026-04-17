@@ -107,7 +107,7 @@ async function fetchlibnetEvents() {
 				const libnetJson = await response.json();
 
 				return {
-					events: libnetJson.map(event => convertlibnetEventToFullCalendarEvent('America/New_York', event, source)),
+					events: libnetJson.map(event => convertlibnetEventToFullCalendarEvent('America/New_York', event, source)).filter(Boolean),
 					city: 'DC',
 					name: source.name,
 				} as EventNormalSource;
@@ -144,12 +144,9 @@ function convertlibnetEventToFullCalendarEvent(timeZone: string, e, source) {
 	});
     
     //Adds in the option for a global tag
-	const tags = [
-    ...new Set([
-        ...(source.defaultTags || []),
-        ...applyEventTags(source, title, description, eventTags)
-        ])
-    ];
+	const tagsResult = applyEventTags(source, title, description, eventTags);
+        if (!tagsResult) return null;
+        const tags = [...new Set([...(source.defaultTags || []), ...tagsResult])];
 
 	if (isDevelopment) title = tags.length + " " + title;
 

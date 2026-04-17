@@ -65,7 +65,7 @@ async function fetchSquarespaceEvents() {
 				const squarespaceJson = await response.json();
 				const squarespaceEvents = squarespaceJson.upcoming || squarespaceJson.items;
 				return {
-					events: squarespaceEvents.map(event => convertSquarespaceEventToFullCalendarEvent(squarespaceJson.website.timeZone, event, source)),
+					events: squarespaceEvents.map(event => convertSquarespaceEventToFullCalendarEvent(squarespaceJson.website.timeZone, event, source)).filter(Boolean),
 					city: source.city,
 					name: source.name,
 				} as EventNormalSource;
@@ -84,12 +84,12 @@ function convertSquarespaceEventToFullCalendarEvent(timeZone: string, e, source)
 	let url = new URL(source.url).origin + e.fullUrl;
 	let title = e.title;
 	let description = e.body + '<br /><a href="'+url+'">More Info</a>';
-	let locationParts = [
-		e.location.addressTitle,
-		e.location.addressLine1,
-		e.location.addressLine2,
-		e.location.addressCountry
-	  ].filter(part => part && part.trim() !== ''); // Remove any empty or undefined parts
+    let locationParts = e.location ? [
+        e.location.addressTitle,
+        e.location.addressLine1,
+        e.location.addressLine2,
+        e.location.addressCountry
+    ].filter(part => part && part.trim() !== '') : [];
 	// Append or prepend text if specified in the source
 	if (source.prefixTitle) { title = source.prefixTitle + title; }
 	if (source.suffixTitle) { title += source.suffixTitle; }
@@ -109,8 +109,11 @@ function convertSquarespaceEventToFullCalendarEvent(timeZone: string, e, source)
 		minute: end.minute,
 	}, { zone: 'America/New_York' });
 
-	const tags = applyEventTags(source, title, description);
-	if (isDevelopment) title=tags.length+" "+title;
+	const tagsResult = applyEventTags(source, title, description);
+    console.log('FreeDC event:', title, '| tagsResult:', tagsResult);
+    if (!tagsResult) return null;
+    const tags = [...new Set([...(source.defaultTags || []), ...tagsResult])];
+    if (isDevelopment) title=tags.length+" "+title;
 
 	return {
 		id: formatTitleAndDateToID(actualStart.toUTC().toJSDate(), title),

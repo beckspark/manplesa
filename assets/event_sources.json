@@ -65,7 +65,11 @@
             "prefixTitle": "🌸📢 ",
             "suffixTitle": " :freedc:",
             "defaultTags": ["politics_activism", "community_service_mutual_aid"],
-            "filters": []
+            "requireFilters": true,
+            "filters": [
+                [["community"], "Ward 1", ["title", "description"]],
+                [["community"], "(mt|mount|mnt)\\.? pleasant", ["title", "description"]]
+            ]
         }
     ],
     "libnet": [

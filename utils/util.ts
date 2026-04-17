@@ -26,15 +26,16 @@ export const replaceBadgePlaceholders = (text: string): string => {
   };
   
 //Tagging script that's reused multiple times
-export function applyEventTags(source: any, title: string, description: string, eventTags?: any): string[] {
+export function applyEventTags(source: any, title: string, description: string, eventTags?: any): string[] | null {
 	const tags: string[] = [];
+    let anyFilterMatched = false;
 	// Apply filters to add tags
 	if (source.filters) source.filters.forEach(filter => {
 		if (filter.length === 1) {
-			// If the filter has only one entry, apply it as a tag to every event
-			const sourceTags = Array.isArray(filter[0]) ? filter[0] : [filter[0]];
-			for (const sourceTag of sourceTags) tags.push(sourceTag);
-		}
+            const sourceTags = Array.isArray(filter[0]) ? filter[0] : [filter[0]];
+            for (const sourceTag of sourceTags) tags.push(sourceTag);
+            anyFilterMatched = true;
+        }
 		else if (filter.length === 2) { //Future plans to have a backup tag, i.e., if a tag or series of tags in filter[1] are not present, then this tag will be applied from filter[0]
 			// Because of how this works, these entries need to be at the very end of the filters section to work properly
 			const sourceTags = Array.isArray(filter[0]) ? filter[0] : [filter[0]];
@@ -64,12 +65,13 @@ export function applyEventTags(source: any, title: string, description: string, 
 				}
 
 				if (eventTagMatch) {
-					for (const sourceTag of sourceTags) {
-						if (typeof sourceTag === 'string') {
-							tags.push(sourceTag);
-						}
-					}
-				}
+                    for (const sourceTag of sourceTags) {
+                        if (typeof sourceTag === 'string') {
+                            tags.push(sourceTag);
+                        }
+                    }
+                    anyFilterMatched = true;
+                }
 
 			} else {
 				// Initialize a flag to track if there's a regex match
@@ -89,10 +91,11 @@ export function applyEventTags(source: any, title: string, description: string, 
 
 				// Check if the event title or description matches the regex based off of searchFields
 				if (regexMatch) {
-					for (const sourceTag of sourceTags) tags.push(sourceTag);
-				} else if (fallbackTag) {
-					tags.push(fallbackTag);
-				}
+                    for (const sourceTag of sourceTags) tags.push(sourceTag);
+                    anyFilterMatched = true;
+                } else if (fallbackTag) {
+                    tags.push(fallbackTag);
+                }
 			}
 		}
 	});
@@ -100,7 +103,9 @@ export function applyEventTags(source: any, title: string, description: string, 
 	//tags.push('🗓️ '+source.name);
 
 	// Adds the default tag `unknownType` if there's less than two tags on an event (each tag is ALWAYS assigned a header tag, so this is an easy way to check if it's been given any non-Header tags)
-	if (tags.length < 2) tags.push('unknownType');
+	if (source.requireFilters && !anyFilterMatched) return null;
+
+    if (tags.length < 2) tags.push('unknownType');
 
 	return tags;
 }
